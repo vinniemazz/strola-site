@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Strola — Walk first. Then your apps.</title>
+  <meta name="description" content="Strola locks your distracting apps until you've walked your daily step goal. Pick your apps, set your steps, go outside. Your streak does the rest.">
+  <meta property="og:title" content="Strola — Walk first. Then your apps.">
+  <meta property="og:description" content="The app blocker you unlock with your feet. Walk your step goal to open your apps, and keep the streak alive.">
+  <meta property="og:url" content="https://strola.app">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/icon-180.png">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header class="nav">
+      <a href="/" aria-label="Strola home"><span class="wordmark"></span></a>
+      <nav class="nav-links" aria-label="Site">
+        <a href="#how">How it works</a>
+        <a href="#plus">Strola+</a>
+        <a href="#faq">FAQ</a>
+        <!-- Swap href for the App Store link at launch. -->
+        <a class="btn btn-primary" href="#" data-appstore>Get the app</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <span class="chip">Launching soon on the App&nbsp;Store</span>
+          <h1>Walk first.<br><span class="then">Then your apps.</span></h1>
+          <p class="lede">
+            Strola locks the apps that eat your morning until you've walked
+            your step goal. No willpower required — the way out is out the door.
+          </p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary" href="#" data-appstore>Download on the App&nbsp;Store</a>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
+          </div>
+        </div>
+
+        <!-- The actual block screen, rebuilt. This is what a locked app shows. -->
+        <div class="shield-stage">
+          <div class="shield" id="shield" role="img"
+               aria-label="Strola's block screen: apps locked, a step progress bar filling toward the goal, and a 12-day streak on the line. When the goal is met, the apps unlock.">
+            <p class="locked-tag">APPS LOCKED</p>
+            <h3 id="shield-title">Take a walk first?</h3>
+            <div class="segbar" id="segbar" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <p class="count" aria-hidden="true"><strong id="steps">0</strong> <span id="count-label">of 1,000 steps</span></p>
+            <p class="streak-line" id="streak-line" aria-hidden="true">🔥 12-day streak on the line</p>
+            <button class="go-outside" id="go-outside" tabindex="-1" aria-hidden="true">Go Outside</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="how">
+        <p class="eyebrow">How it works</p>
+        <h2>Three choices. One honest deal.</h2>
+        <p class="section-lede">
+          You set the terms once. After that, Strola holds you to them —
+          every morning, until the walk is done.
+        </p>
+        <div class="steps">
+          <div class="step reveal">
+            <span class="n">Step 1</span>
+            <h3>Pick your apps</h3>
+            <p>Choose what traps you — social, video, games. Strola shields
+               them with Apple's Screen Time technology, so the block is real.</p>
+          </div>
+          <div class="step reveal">
+            <span class="n">Step 2</span>
+            <h3>Set your steps and window</h3>
+            <p>A goal you'll actually do — 500 to 10,000 steps — and the hours
+               it applies. Mornings are where doomscrolling goes to die.</p>
+          </div>
+          <div class="step reveal">
+            <span class="n">Step 3</span>
+            <h3>Walk to unlock</h3>
+            <p>Your iPhone and Apple Watch count the steps. Hit the goal and
+               your apps open early — with a celebration you'll walk for.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="split">
+          <div>
+            <p class="eyebrow">The streak</p>
+            <h2>Miss a day and the flame goes out.</h2>
+            <p class="section-lede">
+              Every completed walk fills a day on your calendar and grows the
+              number on the flame. It follows you everywhere you look —
+              so quitting is never quiet.
+            </p>
+            <ul class="feature-list">
+              <li><strong>Widgets</strong> put the streak on your home and lock screen.</li>
+              <li><strong>Live Activity</strong> counts your walk down in the Dynamic Island.</li>
+              <li><strong>Badges</strong> mark the milestones — 7 days, 100k steps, comebacks.</li>
+              <li><strong>Share cards</strong> let a good week leave the phone.</li>
+            </ul>
+          </div>
+          <div class="month reveal" aria-hidden="true">
+            <i class="met"></i><i class="met"></i><i class="met"></i><i class="miss"></i><i class="met"></i><i class="met"></i><i class="met"></i>
+            <i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i>
+            <i class="met"></i><i class="met"></i><i class="miss"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i>
+            <i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="today"></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+      </section>
+
+      <section id="plus">
+        <p class="eyebrow">Pricing</p>
+        <h2>The walk is free. Forever.</h2>
+        <p class="section-lede">
+          Blocking, streaks, and history never sit behind a paywall.
+          Strola+ adds the surfaces that make the walk feel alive.
+        </p>
+        <div class="plans">
+          <div class="plan reveal">
+            <p class="tier">Strola</p>
+            <p class="price">Free forever</p>
+            <ul>
+              <li>App blocking with a daily window</li>
+              <li>Step goal, streaks &amp; full history</li>
+              <li>Badges and celebrations</li>
+              <li>Home &amp; lock screen widget</li>
+              <li>Screen time insights</li>
+            </ul>
+          </div>
+          <div class="plan plus reveal">
+            <p class="tier">Strola+</p>
+            <p class="price">$4.99/month · $29.99/year with 7-day free trial · $49.99 once</p>
+            <ul>
+              <li>Everything in free</li>
+              <li>Live Activity &amp; Dynamic Island</li>
+              <li>The full-width home widget</li>
+              <li>Every feature we ship next</li>
+            </ul>
+            <p class="fine">Subscriptions renew until cancelled in Settings. Lifetime is one payment, yours for good.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-strip">
+        <p class="eyebrow">Privacy</p>
+        <h2>Your steps never leave your phone.</h2>
+        <p class="section-lede">
+          No account. No login. Strola reads your step count on-device and
+          can't see which apps you block — Apple's Screen Time design keeps
+          that private even from us. The only thing that ever leaves the
+          phone is anonymous feature-usage counts, and you can turn those off.
+        </p>
+        <p style="margin-top:22px"><a href="/privacy">Read the privacy policy</a></p>
+      </section>
+
+      <section id="faq">
+        <p class="eyebrow">FAQ</p>
+        <h2>Fair questions.</h2>
+        <div class="faq">
+          <details>
+            <summary>Can't I just delete the app to get around it?</summary>
+            <p>You could — Strola is a commitment device, not a jail. But the
+               shield, your streak on the line, and the walk being the fastest
+               way back in are usually enough friction to send you outside
+               instead. That's the point: make the good choice the easy one.</p>
+          </details>
+          <details>
+            <summary>Does it count steps from my Apple Watch?</summary>
+            <p>Yes. Strola reads steps from your iPhone's motion sensors and
+               from Apple Health, which includes your Watch — whichever source
+               is higher counts, so a phone-in-pocket walk and a watch-only
+               walk both work.</p>
+          </details>
+          <details>
+            <summary>What happens if I miss a day?</summary>
+            <p>The day shows up honestly on your calendar, the streak resets,
+               and tomorrow is a comeback — there's a badge for that. Your
+               apps unlock when the window ends either way; Strola never
+               locks you out all day.</p>
+          </details>
+          <details>
+            <summary>Which apps can it block?</summary>
+            <p>Any apps, categories, or websites you choose using Apple's
+               Screen Time picker — social media, video, games, all of it.
+               Strola never sees the list; Apple keeps it private by design.</p>
+          </details>
+          <details>
+            <summary>Is my health data safe?</summary>
+            <p>Your step counts are read on-device and never transmitted
+               anywhere. There's no server and no account. See the
+               <a href="/privacy">privacy policy</a> for the full picture.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="closing">
+        <h2>Tomorrow morning, your apps can wait for you outside.</h2>
+        <a class="btn btn-primary" href="#" data-appstore>Download on the App&nbsp;Store</a>
+      </section>
+    </main>
+
+    <footer>
+      <span class="wordmark" style="width:92px;height:24px" aria-label="Strola"></span>
+      <nav aria-label="Legal">
+        <a href="/privacy">Privacy</a>
+        <a href="mailto:support@strola.app">Support</a>
+      </nav>
+      <span class="fine">© 2026 Strola</span>
+    </footer>
+  </div>
+
+  <script>
+    // The shield demo: the block screen earning its unlock, on a loop.
+    // Copy states mirror the app's ShieldContentBuilder exactly.
+    (function () {
+      var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var goal = 1000;
+      var title = document.getElementById("shield-title");
+      var steps = document.getElementById("steps");
+      var countLabel = document.getElementById("count-label");
+      var streakLine = document.getElementById("streak-line");
+      var segs = document.querySelectorAll("#segbar i");
+      var segbar = document.getElementById("segbar");
+      var shield = document.getElementById("shield");
+      var goOutside = document.getElementById("go-outside");
+
+      function render(n) {
+        var p = Math.min(n / goal, 1);
+        steps.textContent = n.toLocaleString();
+        var filled = Math.floor(p * segs.length);
+        if (n > 0 && filled === 0) filled = 1;
+        segs.forEach(function (s, i) { s.classList.toggle("fill", i < filled); });
+        if (p >= 1) {
+          title.textContent = "You did it";
+          title.classList.add("done");
+          segbar.classList.add("done");
+          shield.classList.add("unlocked");
+          countLabel.textContent = "of " + goal.toLocaleString() + " steps";
+          streakLine.textContent = "Streak protected — day 13 🔥";
+          goOutside.textContent = "Apps unlocked";
+        } else {
+          title.classList.remove("done");
+          segbar.classList.remove("done");
+          shield.classList.remove("unlocked");
+          goOutside.textContent = "Go Outside";
+          streakLine.textContent = "🔥 12-day streak on the line";
+          countLabel.textContent = "of " + goal.toLocaleString() + " steps";
+          if (p >= 0.9) title.textContent = "So close!";
+          else if (p >= 0.5) title.textContent = "Over halfway there";
+          else title.textContent = "Take a walk first?";
+        }
+      }
+
+      if (reduced) { render(740); return; }
+
+      var start = null, climb = 7000, hold = 2600;
+      function tick(t) {
+        if (start === null) start = t;
+        var elapsed = (t - start) % (climb + hold);
+        if (elapsed < climb) {
+          var eased = 0.5 - 0.5 * Math.cos((elapsed / climb) * Math.PI);
+          render(Math.round(goal * eased));
+        } else {
+          render(goal);
+        }
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      // Scroll reveals.
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.2 });
+      document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>
