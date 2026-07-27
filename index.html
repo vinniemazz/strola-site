@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#F5F6F8">
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=28">
   <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
@@ -322,16 +322,25 @@
           </article>
         </div>
 
-        <div class="pricing reveal">
-          <p class="price-lead">
-            <strong>$29.99</strong> a year <span class="save">Save 50%</span>
-          </p>
-          <p class="price-sub">
-            That works out to $2.50 a month. Seven days free to start.
-          </p>
-          <p class="price-alt">Month to month is $4.99.</p>
-          <p class="fine">Renews until you cancel in Settings.</p>
+        <!-- Both prices are quoted per month so the halving is visible before
+             anyone reads the badge. The yearly card carries the real billing
+             line underneath so the per-month figure is never a bait. -->
+        <div class="pricing">
+          <div class="tier-card reveal" style="--i:0">
+            <p class="tier-name">Monthly</p>
+            <p class="tier-price"><strong>$4.99</strong><span>/month</span></p>
+            <p class="tier-note">Billed every month. Cancel whenever you like.</p>
+          </div>
+
+          <div class="tier-card featured reveal" style="--i:1">
+            <p class="tier-name">Yearly <span class="save">Save 50%</span></p>
+            <p class="tier-price"><strong>$2.50</strong><span>/month</span></p>
+            <p class="tier-note">
+              $29.99 billed once a year, and the first seven days are free.
+            </p>
+          </div>
         </div>
+        <p class="fine pricing-fine">Renews until you cancel in Settings.</p>
       </section>
 
       <section class="privacy-strip">
