@@ -1,30 +1,52 @@
-/* Strola — strola.app
-   Tokens come from the app itself (Theme.swift):
-   navy #0A0D18 / #0D1836, accent #3F84C0 → violet #8289EB,
-   success #40DE9E (unlock states only), flame #FFB833 (streaks only). */
+/* Strola, strola.app
+   Every colour here is lifted from the app's light theme (Anti/Design/Theme.swift)
+   so the site and the product are literally the same palette. Line references
+   below point at the Swift declaration each value came from. */
 
 :root {
-  --navy: #0a0d18;
-  --navy-2: #0d1836;
-  --ink: #f5f6f8;
-  --dim: rgba(245, 246, 248, 0.62);
-  --faint: rgba(245, 246, 248, 0.38);
-  --hairline: rgba(245, 246, 248, 0.12);
+  color-scheme: light;
+
+  --ground: #f5f6f8;         /* backgroundLight     :74  */
+  --ink: #15182e;            /* textPrimaryLight    :81  */
+  --dim: #484a5e;            /* textSecondaryLight  :86  */
+  --faint: #636579;          /* textTertiaryLight   :91  */
+  --subtle: #a6a8b3;         /* textFaintLight      :101 */
+  --hairline: #ecedf1;       /* hairlineLight       :123 */
+  --surface: #ffffff;        /* surfaceFillLight    :113 */
+  --surface-strong: #e2e3e8; /* surfaceStrongLight  :118 */
+
   --accent: #3f84c0;
   --violet: #8289eb;
+  /* The brand blues were picked to sit on navy. On a near-white ground they
+     fall under WCAG AA for text: #8289EB links measure 2.88:1 and #3F84C0
+     labels 3.68:1. These deepened variants are for TEXT only. Gradients,
+     fills and the dial keep the true brand colours. */
+  --accent-ink: #1f6ca6;
+  --violet-ink: #5a61c9;
+  --blush: #d98bc8;          /* background washes only, never content (:49) */
   --success: #40de9e;
-  --flame: #ffb833;
+  --miss: #ff5c5c;
+  --splash-ink: #0d1836;     /* what the app multiplies the launch mark to */
+
+  --shadow: rgba(21, 24, 46, 0.08);
+  --shadow-lift: rgba(21, 24, 46, 0.10);
+  --on-accent: #ffffff;
+
   --ramp: linear-gradient(135deg, var(--accent), var(--violet));
   --radius: 18px;
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
 }
+
+/* The text ramp is solid hex rather than alpha tiers. On a light ground an
+   alpha tier changes contrast every time the surface behind it changes, and
+   cards here sit on white while the page sits on #F5F6F8. */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--navy);
+  background: var(--ground);
   color: var(--ink);
   font-family: "Chillax", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-weight: 400;
@@ -33,24 +55,41 @@ body {
   overflow-x: hidden;
 }
 
-/* The app's BrandBackground: two soft radial glows breathing over navy. */
+/* The app's BrandBackground in light mode (Theme.swift:267-318): a four-point
+   mesh of violet and blush over near-white, plus film grain. The grain is the
+   part that matters. Without it a mostly-white page reads as flat grey rather
+   than as lit paper, which is exactly the "default template" look we are
+   trying to get away from. */
 .atmosphere {
   position: fixed;
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(640px 640px at 88% -4%, rgba(63, 132, 192, 0.26), transparent 70%),
-    radial-gradient(600px 600px at 4% 104%, rgba(130, 137, 235, 0.20), transparent 70%),
-    var(--navy);
+    radial-gradient(540px 540px at 85% 6%, rgba(130, 137, 235, 0.17), transparent 70%),
+    radial-gradient(520px 520px at 8% 96%, rgba(217, 139, 200, 0.15), transparent 70%),
+    radial-gradient(430px 430px at 10% 42%, rgba(217, 139, 200, 0.077), transparent 70%),
+    radial-gradient(460px 460px at 90% 62%, rgba(63, 132, 192, 0.043), transparent 70%),
+    var(--ground);
+}
+
+/* feTurbulence at the app's 0.04 opacity. Inline data URI so it costs no
+   request and cannot fail to load. */
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 
-a { color: var(--violet); text-decoration: none; }
+a { color: var(--violet-ink); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 :focus-visible {
-  outline: 2px solid var(--violet);
+  outline: 2px solid var(--violet-ink);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -64,14 +103,33 @@ a:hover { text-decoration: underline; }
   padding: 26px 0;
 }
 
-.wordmark {
-  display: inline-block;
-  width: 118px;
-  height: 30px;
+/* The brand lockup is the designer's own horizontal file, so the mark size and
+   the spacing between mark and wordmark are baked in rather than assembled here.
+   Its viewBox is cropped to the ink (26 117 749.2 166.7), which is why a box of
+   height H shows exactly H of artwork; the uncropped export frames it with
+   padding a CSS mask cannot see.
+
+   Painted with a flat background and alpha-masked, so it follows --ink for free
+   and needs no work when the palette changes. The mask URL resolves against
+   THIS stylesheet, not the document, which is why it still works from
+   /privacy/. Moving style.css breaks it, silently.
+
+   The ?v= on the asset is load-bearing. Bumping style.css's own ?v= does NOT
+   re-fetch the files it references, so a cropped viewBox will keep rendering
+   from cache at the old aspect for anyone who visited before. Bump the asset's
+   version whenever its geometry changes. */
+.brand {
+  --lockup-h: 34px;
+  display: block;
+  flex: none;
+  height: var(--lockup-h);
+  width: calc(var(--lockup-h) * 4.494);
   background: var(--ink);
-  -webkit-mask: url("assets/wordmark.svg") no-repeat left center / contain;
-  mask: url("assets/wordmark.svg") no-repeat left center / contain;
+  -webkit-mask: url("assets/lockup.svg?v=1") no-repeat center / contain;
+  mask: url("assets/lockup.svg?v=1") no-repeat center / contain;
 }
+
+footer .brand { --lockup-h: 26px; }
 
 .nav-links { display: flex; gap: 28px; align-items: center; }
 
@@ -99,9 +157,15 @@ a:hover { text-decoration: underline; }
 
 .btn-primary {
   background: var(--ramp);
-  color: #fff;
+  color: var(--on-accent);
+  box-shadow: 0 6px 18px rgba(63, 132, 192, 0.22);
 }
-.btn-primary:hover { text-decoration: none; filter: brightness(1.08); }
+/* Brightening a gradient works on a dark page and washes it out on a light
+   one. Deepen and saturate instead. */
+.btn-primary:hover {
+  text-decoration: none;
+  filter: brightness(0.96) saturate(1.05);
+}
 
 .btn-ghost {
   background: transparent;
@@ -126,8 +190,8 @@ a:hover { text-decoration: underline; }
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--violet);
-  border: 1px solid rgba(130, 137, 235, 0.35);
+  color: var(--violet-ink);
+  border: 1px solid color-mix(in srgb, var(--violet) 45%, transparent);
   border-radius: 999px;
   padding: 5px 14px;
   margin-bottom: 22px;
@@ -151,84 +215,333 @@ h1 .then { color: var(--faint); }
 
 .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
 
-/* ── The shield card (the block screen, rebuilt) ─────── */
+/* ── The step dial ───────────────────────────────────── */
+/* Geometry is copied from the app's ProgressRingView .dial style
+   (Anti/Views/Components/ProgressRingView.swift:59-93): 0.72 of the circle,
+   259.2 degrees of sweep with a 100.8 degree cup centred on six o'clock,
+   r=118, 18pt stroke, round caps. Same object, same numbers. */
 
-.shield-stage { display: flex; justify-content: center; }
-
-.shield {
-  width: min(340px, 100%);
-  background: linear-gradient(160deg, #111a33, var(--navy-2) 60%);
-  border: 1px solid var(--hairline);
-  border-radius: 28px;
-  padding: 34px 28px 28px;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
-  text-align: center;
+.dial-stage {
+  display: flex;
+  justify-content: center;
 }
 
-.shield .locked-tag {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  color: var(--faint);
-  margin-bottom: 18px;
+.dial {
+  position: relative;
+  width: min(320px, 100%);
+  aspect-ratio: 1;
 }
 
-.shield h3 {
-  font-size: 24px;
+/* Direct child only. `.dial svg` also matches the checkmark's own <svg>, and
+   at higher specificity than .dial-check, which stretched the check to fill
+   its cell and blew out the readout spacing. */
+.dial > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.dial .track { stroke: var(--surface-strong); }
+
+.dial .progress {
+  /* 0.72 of a 741.42 circumference. dashoffset counts this down to 0. */
+  stroke-dasharray: 533.82 741.42;
+  stroke-dashoffset: 533.82;
+}
+
+.dial-readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+/* Count and check stack in one grid cell, so the swap at completion does not
+   move the goal line underneath. */
+.dial-figure {
+  display: grid;
+  place-items: center;
+}
+.dial-figure > * {
+  grid-area: 1 / 1;
+}
+
+.dial-count {
+  font-size: clamp(46px, 9vw, 64px);
   font-weight: 600;
-  line-height: 1.2;
-  min-height: 2.4em;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  /* Tabular figures stop the number jittering as it counts. */
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.dial-check {
+  width: clamp(56px, 11vw, 76px);
+  height: clamp(56px, 11vw, 76px);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* The green is the app's success token used the way the app uses it: as a
+   fill, matching the streak calendar's met-day cells. The tick sits on top in
+   ink, which reads at 9.5:1 instead of the 1.60:1 a green stroke would give. */
+.dial-check-disc {
+  fill: var(--success);
+}
+
+.dial-check-tick {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* pathLength="1" normalises the stroke so the draw-on needs no measuring. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.dial-goal {
+  font-size: 15px;
+  color: var(--faint);
+  transition: color 0.3s ease;
+}
+
+/* ── Completed state ─────────────────────────────────────
+   Success green is the app's unlock colour and is reserved for exactly this
+   (Theme.swift:61). The arc turning green is the same signal the shield gives
+   at the goal. */
+.dial .progress {
+  transition: stroke 0.4s ease;
+}
+
+.dial.done .progress {
+  stroke: var(--success);
+}
+
+.dial.done .dial-count {
+  opacity: 0;
+  transform: scale(0.86);
+}
+
+.dial.done .dial-check {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.2s ease, transform 0.35s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+.dial.done .dial-check-tick {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.15s;
+}
+
+/* Green text on this ground is unreadable, so the label carries the state in
+   words and weight instead of colour. */
+.dial.done .dial-goal {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ── Splash ──────────────────────────────────────────── */
+/* Port of the app's launch animation (StrolaSplash.json, played at 1.25x in
+   SplashView.swift, so 1.84s). Inline SVG and CSS keyframes rather than a
+   Lottie player: a player would have to download itself and the JSON before
+   the loading screen could appear, which defeats the point.
+   Ships hidden and is revealed by script, so with JS off it never shows and
+   cannot strand anyone behind a blank overlay. */
+
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--ground);
+  transition: opacity 0.4s ease-in-out;
 }
-.shield h3.done { color: var(--success); }
+.splash[hidden] { display: none; }
+.splash.done { opacity: 0; pointer-events: none; }
 
-.segbar {
+.splash-stage {
+  position: relative;
+  width: min(420px, 74vw);
+  height: calc(min(420px, 74vw) / 2);
+}
+
+/* The app multiplies the white artwork to #0D1836 in light mode. */
+.splash-mark,
+.splash-word {
+  position: absolute;
+  top: 50%;
+  background: var(--splash-ink);
+}
+
+/* Final resting layout: mark on the left, wordmark to its right, matching the
+   nav lockup. The mark starts centred and travels here, which is why the
+   keyframes carry a translate rather than the layout doing it.
+
+   Geometry is lifted from the designer's horizontal lockup so the splash
+   resolves into exactly what the nav shows a moment later. Measured off
+   lockup.svg: mark is 33.98% of the lockup width, the wordmark starts at
+   39.37% and runs 60.62%, and their vertical centres coincide. Scaled to a
+   lockup occupying 86% of the stage width, that lands at: */
+.splash-mark {
+  left: 7%;
+  width: 29.22%;
+  aspect-ratio: 1.552;
+  -webkit-mask: url("assets/logo.svg?v=2") no-repeat center / contain;
+  mask: url("assets/logo.svg?v=2") no-repeat center / contain;
+  animation:
+    splash-fade 0.13s ease-out both,
+    splash-mark 1.47s both;
+}
+
+.splash-word {
+  left: 40.86%;
+  width: 52.13%;
+  aspect-ratio: 2.723;
+  -webkit-mask: url("assets/wordmark.svg?v=2") no-repeat center / contain;
+  mask: url("assets/wordmark.svg?v=2") no-repeat center / contain;
+  animation: splash-word 0.40s cubic-bezier(0.33, 0, 0.2, 1) 0.93s both;
+}
+
+@keyframes splash-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Spin and settle have to live in ONE animation. As two, the settle keyframes
+   fill backwards through their own delay and clobber the spin's transform, so
+   the 360 never renders. Percentages are the app's beats over 1.47s:
+   spin 0.11-0.91s, settle 0.93-1.47s. */
+@keyframes splash-mark {
+  0% {
+    transform: translate(97.16%, -50%) rotate(0deg) scale(1.16);
+    animation-timing-function: linear;
+  }
+  7.5% {
+    transform: translate(97.16%, -50%) rotate(0deg) scale(1.16);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  61.9% {
+    transform: translate(97.16%, -50%) rotate(360deg) scale(1.16);
+    animation-timing-function: linear;
+  }
+  63.3% {
+    transform: translate(97.16%, -50%) rotate(360deg) scale(1.16);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  }
+  100% {
+    transform: translate(0, -50%) rotate(360deg) scale(1);
+  }
+}
+
+/* The comp reveals this behind a rectangular alpha matte sliding right. */
+@keyframes splash-word {
+  from { clip-path: inset(0 100% 0 0); transform: translate(-14%, -50%); }
+  to { clip-path: inset(0 0 0 0); transform: translate(0, -50%); }
+}
+
+/* ── Real app screens ────────────────────────────────────
+   Bare rounded screens, no hardware bezel. A drawn iPhone frame dates itself
+   the moment Apple ships a new body, and the two comparable sites that were
+   verified disagree about frames anyway, so the treatment that ages best wins.
+
+   Three screens, fanned. They arrive stacked and separate into place, which is
+   also the order the product happens in: locked, met, logged. */
+
+.screens {
   display: flex;
-  gap: 5px;
   justify-content: center;
-  margin: 20px 0 14px;
-}
-.segbar i {
-  width: 26px;
-  height: 8px;
-  border-radius: 3px;
-  background: rgba(245, 246, 248, 0.14);
-  transition: background 0.35s ease;
-}
-.segbar i.fill { background: var(--accent); }
-.segbar.done i.fill { background: var(--success); }
-
-.shield .count {
-  font-family: var(--mono);
-  font-size: 15px;
-  color: var(--dim);
-  min-height: 1.6em;
-}
-.shield .count strong { color: var(--ink); font-weight: 600; }
-
-.shield .streak-line {
-  font-size: 13px;
-  color: var(--flame);
-  margin-top: 10px;
-  min-height: 1.6em;
+  align-items: center;
+  gap: 14px;
+  margin-top: 56px;
+  padding: 10px 0 6px;
 }
 
-.shield .go-outside {
-  margin-top: 22px;
+/* All three share a width on purpose. They are the same 600px-wide source, so
+   any size difference scales the status bar with it, and a 15% larger 9:41 on
+   the middle screen reads as misalignment rather than hierarchy. */
+.screen {
+  position: relative;
+  flex: none;
+  width: 244px;
+  border-radius: 32px;
+  transform: rotate(var(--rot, 0deg));
+}
+
+/* The payoff leads on depth instead of size: upright while the others tilt,
+   in front where they overlap, and the only one with a bloom. */
+.screen.lead {
+  z-index: 2;
+  transform: translateY(-14px);
+}
+
+.screen img {
+  display: block;
   width: 100%;
-  border: none;
-  border-radius: 999px;
-  padding: 14px 0;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 500;
-  color: #fff;
-  background: var(--ramp);
-  pointer-events: none;
+  height: auto;
+  border-radius: inherit;
+  box-shadow:
+    0 2px 6px rgba(21, 24, 46, 0.10),
+    0 22px 50px rgba(21, 24, 46, 0.15);
 }
-.shield.unlocked .go-outside { background: var(--success); color: var(--navy); }
+
+.screen.lead img {
+  box-shadow:
+    0 3px 8px rgba(21, 24, 46, 0.12),
+    0 34px 74px rgba(21, 24, 46, 0.22);
+}
+
+/* Success bloom behind the completed screen only. Uses the app's real unlock
+   green, the same token as the streak calendar's met days. */
+.screen.lead::before {
+  content: "";
+  position: absolute;
+  inset: 12% -22% 8%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--success), transparent 72%);
+  opacity: 0.30;
+  filter: blur(26px);
+}
+
+.screen figcaption {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+
+/* Fan out on entry: stacked and flat, then rotating into their resting angles.
+   Scoped to .js so the screens are simply visible without JavaScript. */
+.js .screens .screen {
+  opacity: 0;
+  transform: translateY(38px) rotate(0deg) scale(0.93);
+}
+
+.js .screens.in .screen {
+  animation: screen-in 0.72s cubic-bezier(0.22, 1, 0.32, 1) both;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
+
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(38px) rotate(0deg) scale(0.93); }
+  to   { opacity: 1; transform: translateY(var(--lift, 0)) rotate(var(--rot, 0deg)) scale(1); }
+}
+
+/* The lead's lift has to travel through the keyframe too, or the animation
+   lands it back at 0 and it drops on arrival. */
+.screen.lead { --lift: -14px; }
 
 /* ── Sections ────────────────────────────────────────── */
 
@@ -239,7 +552,7 @@ section { padding: 84px 0; }
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-ink);
   margin-bottom: 14px;
 }
 
@@ -257,7 +570,7 @@ h2 {
   margin-top: 16px;
 }
 
-/* How it works — a real sequence, so the numbers mean something. */
+/* How it works: a real sequence, so the numbers mean something. */
 .steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -266,16 +579,17 @@ h2 {
 }
 
 .step {
-  background: rgba(245, 246, 248, 0.04);
+  background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: var(--radius);
   padding: 26px 24px;
+  box-shadow: 0 1px 2px var(--shadow), 0 8px 24px var(--shadow);
 }
 
 .step .n {
   font-family: var(--mono);
   font-size: 13px;
-  color: var(--violet);
+  color: var(--violet-ink);
   display: block;
   margin-bottom: 14px;
 }
@@ -301,33 +615,66 @@ h2 {
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: rgba(245, 246, 248, 0.08);
+  background: var(--surface-strong);
 }
 .month i.met { background: var(--success); }
-.month i.miss { background: rgba(255, 92, 92, 0.75); }
+.month i.miss { background: color-mix(in srgb, var(--miss) 78%, transparent); }
 .month i.today {
-  background: rgba(63, 132, 192, 0.45);
+  background: color-mix(in srgb, var(--accent) 42%, transparent);
   outline: 1.5px solid var(--faint);
   outline-offset: 1px;
 }
 
+/* The calendar fills in day by day when it scrolls into view. That is the
+   section's whole argument made visually: the streak accumulating.
+   The container keeps .reveal so the observer still tags it with .in, but its
+   own fade is switched off here, otherwise the block fade and the per-cell
+   stagger fight each other. */
+.js .month.reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.js .month i {
+  opacity: 0;
+  transform: scale(0.4) translateY(6px);
+}
+
+/* 45ms apart over 35 cells is about 1.6s end to end. At the original 24ms the
+   whole calendar was built before your eye reached it, which read as no
+   animation at all. The 120ms head start lets the section settle first. */
+.js .month.in i {
+  animation: day-in 0.46s cubic-bezier(0.34, 1.45, 0.5, 1) both;
+  animation-delay: calc(120ms + var(--i, 0) * 45ms);
+}
+
+@keyframes day-in {
+  from { opacity: 0; transform: scale(0.4) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 .feature-list { list-style: none; margin-top: 26px; }
+
+/* Absolutely positioned marker, not flex. As a flex container the <strong>
+   and the text after it become separate flex items, so `gap` opened a hole
+   mid-sentence and wrapped lines indented under themselves instead of hanging
+   under the text. Same pattern as .plan li below. */
 .feature-list li {
-  display: flex;
-  gap: 12px;
-  align-items: baseline;
-  padding: 9px 0;
+  position: relative;
+  padding: 9px 0 9px 22px;
   color: var(--dim);
   font-size: 16px;
 }
 .feature-list li::before {
   content: "";
-  flex: none;
+  position: absolute;
+  left: 0;
+  top: 1.1em;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--ramp);
-  transform: translateY(-1px);
 }
 .feature-list strong { color: var(--ink); font-weight: 500; }
 
@@ -344,9 +691,13 @@ h2 {
   border: 1px solid var(--hairline);
   border-radius: var(--radius);
   padding: 30px 28px;
-  background: rgba(245, 246, 248, 0.04);
+  background: var(--surface);
+  box-shadow: 0 1px 2px var(--shadow), 0 8px 24px var(--shadow);
 }
-.plan.plus { border-color: rgba(130, 137, 235, 0.5); position: relative; }
+.plan.plus {
+  border-color: color-mix(in srgb, var(--violet) 45%, transparent);
+  position: relative;
+}
 
 .plan .tier { font-size: 20px; font-weight: 600; }
 .plan .price { font-size: 15px; color: var(--dim); margin-top: 4px; }
@@ -357,11 +708,14 @@ h2 {
   padding: 6px 0 6px 26px;
   position: relative;
 }
+/* Not green. This tick means "included in the plan", not "goal met", and
+   #40DE9E on a white card is 1.73:1. Success green stays reserved for actual
+   completion, which is the rule the app follows too. */
 .plan li::before {
   content: "✓";
   position: absolute;
   left: 0;
-  color: var(--success);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 .plan .fine { font-size: 13px; color: var(--faint); margin-top: 18px; }
@@ -391,8 +745,13 @@ h2 {
   gap: 16px;
 }
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary::after { content: "+"; color: var(--violet); font-weight: 400; }
-.faq details[open] summary::after { content: "–"; }
+.faq summary::after {
+  content: "+";
+  color: var(--violet-ink);
+  font-weight: 400;
+  transition: transform 0.2s ease;
+}
+.faq details[open] summary::after { transform: rotate(45deg); }
 .faq details p { color: var(--dim); font-size: 15px; margin-top: 12px; max-width: 44em; }
 
 /* Closing CTA + footer */
@@ -416,33 +775,63 @@ footer nav { display: flex; gap: 22px; }
 .legal { max-width: 720px; padding: 48px 0 96px; }
 .legal h1 { font-size: 36px; margin-bottom: 6px; }
 .legal .updated { color: var(--faint); font-size: 14px; margin-bottom: 40px; }
-.legal h2 { font-size: 22px; margin: 40px 0 12px; }
+/* h2 carries max-width 18em for marketing measure; at the legal page's
+   22px that wraps headings after only a few words. */
+.legal h2 { font-size: 22px; margin: 40px 0 12px; max-width: none; }
 .legal p, .legal li { color: var(--dim); font-size: 16px; margin-bottom: 12px; }
 .legal ul { padding-left: 22px; }
 
 /* ── Motion ──────────────────────────────────────────── */
 
-.reveal {
+/* Reveals are opt-in. Scoping them to .js means that with JavaScript disabled
+   the content is simply visible, instead of six sections sitting at opacity 0
+   forever because nothing ever adds .in. */
+.js .reveal {
   opacity: 0;
   transform: translateY(14px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
-.reveal.in { opacity: 1; transform: none; }
+.js .reveal.in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
-  .segbar i { transition: none; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .js .month i { opacity: 1; transform: none; }
+  .js .month.in i { animation: none; }
+  .js .screens .screen { opacity: 1; transform: rotate(var(--rot, 0deg)); }
+  .js .screens.in .screen { animation: none; }
 }
 
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; padding: 40px 0 64px; }
-  .shield-stage { order: -1; }
+  .dial-stage { order: -1; }
+  /* The dial sits above the headline on mobile. Cap it so the headline still
+     clears the fold on arrival. */
+  .dial { width: min(210px, 58vw); }
   .steps { grid-template-columns: 1fr; }
   .split { grid-template-columns: 1fr; gap: 40px; }
   .plans { grid-template-columns: 1fr; }
+  /* Fanned angles do not survive a 375px viewport. Become a swipeable strip. */
+  .screens {
+    gap: 18px;
+    margin: 40px -24px 0;
+    padding: 10px 24px 6px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .screens::-webkit-scrollbar { display: none; }
+  .screen, .screen.lead { width: 62vw; max-width: 260px; scroll-snap-align: center; }
+  .screen { transform: none; }
+  .js .screens.in .screen { animation-name: screen-in-flat; }
+  @keyframes screen-in-flat {
+    from { opacity: 0; transform: translateY(26px) scale(0.95); }
+    to   { opacity: 1; transform: none; }
+  }
   section { padding: 60px 0; }
   .nav-links a:not(.btn) { display: none; }
 }

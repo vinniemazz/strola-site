@@ -3,19 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Privacy Policy — Strola</title>
-  <meta name="description" content="Strola's privacy policy: no accounts, no server, steps stay on your phone, anonymous analytics you can turn off.">
-  <link rel="icon" href="/assets/icon-180.png">
+  <title>Privacy Policy | Strola</title>
+  <meta name="description" content="Strola's privacy policy. No accounts, no server, and your step data stays on your phone.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/assets/favicon-180.png" sizes="180x180" type="image/png">
+  <!-- Square on purpose. iOS masks touch icons itself, so a pre-rounded one
+       gets rounded twice and shows corner artifacts. -->
+  <link rel="apple-touch-icon" href="/assets/icon-180.png">
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
+  <meta name="theme-color" content="#F5F6F8">
+  <link rel="stylesheet" href="/style.css?v=26">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
   <div class="atmosphere" aria-hidden="true"></div>
 
   <div class="wrap">
     <header class="nav">
-      <a href="/" aria-label="Strola home"><span class="wordmark"></span></a>
+      <a class="brand" href="/" aria-label="Strola home"></a>
       <nav class="nav-links" aria-label="Site">
         <a href="/#how">How it works</a>
         <a href="/#plus">Strola+</a>
@@ -39,14 +46,14 @@
         from your iPhone's motion sensors and from Apple Health (which can
         include your Apple Watch) to measure progress toward the goal you set.
         These readings are processed on your device and are never transmitted
-        to us or anyone else. Strola reads steps only — it does not read any
+        to us or anyone else. Strola reads steps only. It does not read any
         other health data, and it never writes to Apple Health.</li>
         <li><strong>Your blocked apps.</strong> App blocking uses Apple's
         Screen Time technology (Family Controls). Apple's design gives Strola
-        opaque tokens rather than app names — we cannot see which apps you
+        opaque tokens rather than app names, so we cannot see which apps you
         chose, and that information never leaves your device.</li>
-        <li><strong>Your history.</strong> Your daily records — steps walked,
-        goals met, streaks — are stored on your device. If a future version
+        <li><strong>Your history.</strong> Your daily records, meaning steps
+        walked, goals met, and streaks, are stored on your device. If a future version
         offers iCloud backup, that history syncs only to your personal,
         private iCloud database, which Apple encrypts and we cannot read.</li>
       </ul>
@@ -58,7 +65,7 @@
       a privacy-first analytics service, so we can see things like how many
       people finish setup or complete their first goal. These signals:</p>
       <ul>
-        <li>contain event names and counts only — for example
+        <li>contain event names and counts only, for example
         "onboarding step completed" or "goal celebrated";</li>
         <li>never contain your step counts, health data, app selections,
         name, email, precise location, or any advertising identifier;</li>
@@ -83,20 +90,20 @@
       <p>If the app crashes, Apple's built-in reporting may share a diagnostic
       with us if you've opted into sharing analytics with developers in iOS
       Settings, and Strola may record an anonymous "a crash happened" signal
-      (crash type and app version only — never the contents of your data).</p>
+      (crash type and app version only, never the contents of your data).</p>
 
       <h2>What we never do</h2>
       <ul>
-        <li>No accounts, profiles, or logins.</li>
-        <li>No selling, renting, or sharing of data — there is nothing to sell.</li>
+        <li>There are no accounts, profiles, or logins.</li>
+        <li>We do not sell, rent, or share your data. There is nothing to sell.</li>
         <li>No advertising, ad SDKs, or tracking across apps and websites.</li>
-        <li>No reading of your health data beyond step counts.</li>
+        <li>Strola does not read any health data beyond your step count.</li>
       </ul>
 
       <h2>Deleting your data</h2>
       <p>Your data lives on your device, so deleting Strola deletes it. Step
       data recorded in Apple Health belongs to Health, not Strola, and is
-      managed in the Health app. Analytics signals are anonymous — they can't
+      managed in the Health app. Analytics signals are anonymous, so they can't
       be connected back to you, by us or by TelemetryDeck.</p>
 
       <h2>Children</h2>
@@ -105,7 +112,7 @@
       include parental controls or child accounts.</p>
 
       <h2>Changes</h2>
-      <p>If we change this policy — for example, when iCloud backup ships —
+      <p>If we change this policy, for example when iCloud backup ships,
       we'll update this page and the effective date above. Material changes
       will be called out in the app's release notes.</p>
 
@@ -114,7 +121,7 @@
     </main>
 
     <footer>
-      <span class="wordmark" style="width:92px;height:24px" aria-label="Strola"></span>
+      <span class="brand" role="img" aria-label="Strola"></span>
       <nav aria-label="Legal">
         <a href="/privacy">Privacy</a>
         <a href="mailto:support@strola.app">Support</a>

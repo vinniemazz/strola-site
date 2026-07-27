@@ -3,24 +3,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Strola — Walk first. Then your apps.</title>
-  <meta name="description" content="Strola locks your distracting apps until you've walked your daily step goal. Pick your apps, set your steps, go outside. Your streak does the rest.">
-  <meta property="og:title" content="Strola — Walk first. Then your apps.">
-  <meta property="og:description" content="The app blocker you unlock with your feet. Walk your step goal to open your apps, and keep the streak alive.">
+  <title>Strola: Walk first. Then your apps.</title>
+  <meta name="description" content="Strola locks your distracting apps until you've walked your daily step goal. You choose which apps, and how many steps. Then you go outside.">
+  <meta property="og:title" content="Strola: Walk first. Then your apps.">
+  <meta property="og:description" content="An app blocker that opens when you walk. Set a step goal, and your apps stay shut until you hit it.">
   <meta property="og:url" content="https://strola.app">
   <meta property="og:type" content="website">
-  <link rel="icon" href="assets/icon-180.png">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/favicon-180.png" sizes="180x180" type="image/png">
+  <!-- Square on purpose. iOS masks touch icons itself, so a pre-rounded one
+       gets rounded twice and shows corner artifacts. -->
   <link rel="apple-touch-icon" href="assets/icon-180.png">
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#F5F6F8">
+  <link rel="stylesheet" href="style.css?v=26">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
+  <!-- Ships hidden and is revealed by the inline script at the foot of the
+       page. With JS disabled it never appears, so it can never strand anyone
+       behind a blank overlay. -->
+  <div class="splash" id="splash" aria-hidden="true" hidden>
+    <div class="splash-stage">
+      <span class="splash-word"></span>
+      <span class="splash-mark"></span>
+    </div>
+  </div>
+
   <div class="atmosphere" aria-hidden="true"></div>
 
   <div class="wrap">
     <header class="nav">
-      <a href="/" aria-label="Strola home"><span class="wordmark"></span></a>
+      <a class="brand" href="/" aria-label="Strola home"></a>
       <nav class="nav-links" aria-label="Site">
         <a href="#how">How it works</a>
         <a href="#plus">Strola+</a>
@@ -36,8 +52,9 @@
           <span class="chip">Launching soon on the App&nbsp;Store</span>
           <h1>Walk first.<br><span class="then">Then your apps.</span></h1>
           <p class="lede">
-            Strola locks the apps that eat your morning until you've walked
-            your step goal. No willpower required — the way out is out the door.
+            Strola locks the apps that eat your morning until you've walked your
+            step goal. You don't have to argue with yourself about it. The apps
+            open when the steps are done.
           </p>
           <div class="hero-ctas">
             <a class="btn btn-primary" href="#" data-appstore>Download on the App&nbsp;Store</a>
@@ -45,48 +62,103 @@
           </div>
         </div>
 
-        <!-- The actual block screen, rebuilt. This is what a locked app shows. -->
-        <div class="shield-stage">
-          <div class="shield" id="shield" role="img"
-               aria-label="Strola's block screen: apps locked, a step progress bar filling toward the goal, and a 12-day streak on the line. When the goal is met, the apps unlock.">
-            <p class="locked-tag">APPS LOCKED</p>
-            <h3 id="shield-title">Take a walk first?</h3>
-            <div class="segbar" id="segbar" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <!-- The app's step dial, rebuilt in SVG. Geometry matches
+             ProgressRingView .dial exactly: 0.72 of the circle, r=118,
+             18pt stroke, round caps, rotated 140.4deg. -->
+        <div class="dial-stage">
+          <div class="dial" role="img"
+               aria-label="A step dial filling from zero to a 2,000 step goal.">
+            <svg viewBox="0 0 254 254" aria-hidden="true">
+              <defs>
+                <linearGradient id="ramp" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#3F84C0"/>
+                  <stop offset="1" stop-color="#8289EB"/>
+                </linearGradient>
+              </defs>
+              <g transform="rotate(140.4 127 127)" fill="none"
+                 stroke-width="18" stroke-linecap="round">
+                <circle class="track" cx="127" cy="127" r="118"
+                        stroke-dasharray="533.82 741.42"/>
+                <circle class="progress" id="dial-arc" cx="127" cy="127" r="118"
+                        stroke="url(#ramp)"/>
+              </g>
+            </svg>
+            <div class="dial-readout">
+              <!-- Count and check share one grid cell so swapping them causes
+                   no layout shift. -->
+              <span class="dial-figure">
+                <span class="dial-count" id="dial-count">0</span>
+                <svg class="dial-check" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="dial-check-disc" cx="24" cy="24" r="22"/>
+                  <path class="dial-check-tick" d="M14 24.5 L21 31.5 L34 16.5"
+                        pathLength="1"/>
+                </svg>
+              </span>
+              <span class="dial-goal" id="dial-goal">of 2,000 steps</span>
             </div>
-            <p class="count" aria-hidden="true"><strong id="steps">0</strong> <span id="count-label">of 1,000 steps</span></p>
-            <p class="streak-line" id="streak-line" aria-hidden="true">🔥 12-day streak on the line</p>
-            <button class="go-outside" id="go-outside" tabindex="-1" aria-hidden="true">Go Outside</button>
           </div>
         </div>
       </section>
 
       <section id="how">
         <p class="eyebrow">How it works</p>
-        <h2>Three choices. One honest deal.</h2>
+        <h2>You set the terms, then Strola holds you to them.</h2>
         <p class="section-lede">
-          You set the terms once. After that, Strola holds you to them —
-          every morning, until the walk is done.
+          Three things to decide, and you only decide them once. After that the
+          app is the same every morning until the walk is done.
         </p>
         <div class="steps">
           <div class="step reveal">
             <span class="n">Step 1</span>
             <h3>Pick your apps</h3>
-            <p>Choose what traps you — social, video, games. Strola shields
-               them with Apple's Screen Time technology, so the block is real.</p>
+            <p>Whatever it is that gets you. Social apps, video, games, or one
+               specific offender. Strola shields them with Apple's Screen Time
+               technology, which means the block holds.</p>
           </div>
           <div class="step reveal">
             <span class="n">Step 2</span>
             <h3>Set your steps and window</h3>
-            <p>A goal you'll actually do — 500 to 10,000 steps — and the hours
-               it applies. Mornings are where doomscrolling goes to die.</p>
+            <p>Anywhere from 500 to 10,000 steps, and the hours it applies.
+               Most people put the window over the morning, because that is
+               when the scrolling tends to happen.</p>
           </div>
           <div class="step reveal">
             <span class="n">Step 3</span>
             <h3>Walk to unlock</h3>
-            <p>Your iPhone and Apple Watch count the steps. Hit the goal and
-               your apps open early — with a celebration you'll walk for.</p>
+            <p>Your iPhone and Apple Watch count the steps. Hit the goal and the
+               apps open early, with a small celebration when they do.</p>
           </div>
+        </div>
+      </section>
+
+
+      <section id="screens">
+        <p class="eyebrow">The app</p>
+        <h2>What a morning looks like.</h2>
+        <p class="section-lede">
+          Your apps stay shut while the dial fills. When it fills, they open and
+          the day gets a green square. That is the whole loop, and it is the same
+          every morning.
+        </p>
+
+        <div class="screens reveal">
+          <figure class="screen" style="--rot:-4.5deg; --i:0">
+            <img src="assets/locked.webp" width="600" height="1304" loading="lazy" decoding="async"
+                 alt="Strola's locked screen: apps locked, 1,284 of 2,000 steps, two hours nineteen minutes left in the morning window.">
+            <figcaption>Locked, mid&nbsp;walk</figcaption>
+          </figure>
+
+          <figure class="screen lead" style="--rot:0deg; --i:1">
+            <img src="assets/celebration.webp" width="600" height="1304" loading="lazy" decoding="async"
+                 alt="Goal met: a thirty day streak and a newly earned badge, The Monthly.">
+            <figcaption>Goal met</figcaption>
+          </figure>
+
+          <figure class="screen" style="--rot:4.5deg; --i:2">
+            <img src="assets/history.webp" width="600" height="1304" loading="lazy" decoding="async"
+                 alt="History: a thirty day streak, 82 percent completion, 2,162 average steps, and a calendar of met and missed days.">
+            <figcaption>Your history</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -94,17 +166,18 @@
         <div class="split">
           <div>
             <p class="eyebrow">The streak</p>
-            <h2>Miss a day and the flame goes out.</h2>
+            <h2>The streak is the part that sticks.</h2>
             <p class="section-lede">
-              Every completed walk fills a day on your calendar and grows the
-              number on the flame. It follows you everywhere you look —
-              so quitting is never quiet.
+              Every completed walk fills in a day on your calendar and adds one
+              to the number on the flame. Miss a day and the number goes back to
+              zero, which turns out to be a surprisingly effective reason to put
+              your shoes on.
             </p>
             <ul class="feature-list">
               <li><strong>Widgets</strong> put the streak on your home and lock screen.</li>
               <li><strong>Live Activity</strong> counts your walk down in the Dynamic Island.</li>
-              <li><strong>Badges</strong> mark the milestones — 7 days, 100k steps, comebacks.</li>
-              <li><strong>Share cards</strong> let a good week leave the phone.</li>
+              <li><strong>Badges</strong> mark the milestones, including the comeback after a missed day.</li>
+              <li><strong>Share cards</strong> turn a good week into something you can send.</li>
             </ul>
           </div>
           <div class="month reveal" aria-hidden="true">
@@ -119,10 +192,11 @@
 
       <section id="plus">
         <p class="eyebrow">Pricing</p>
-        <h2>The walk is free. Forever.</h2>
+        <h2>The walk is free, and it stays free.</h2>
         <p class="section-lede">
-          Blocking, streaks, and history never sit behind a paywall.
-          Strola+ adds the surfaces that make the walk feel alive.
+          Blocking, streaks, and your full history are not behind a paywall and
+          will not be. Strola+ adds the extras that put the walk on your home
+          screen and lock screen.
         </p>
         <div class="plans">
           <div class="plan reveal">
@@ -143,73 +217,74 @@
               <li>Everything in free</li>
               <li>Live Activity &amp; Dynamic Island</li>
               <li>The full-width home widget</li>
-              <li>Every feature we ship next</li>
+              <li>New Strola+ features as they ship</li>
             </ul>
-            <p class="fine">Subscriptions renew until cancelled in Settings. Lifetime is one payment, yours for good.</p>
+            <p class="fine">Subscriptions renew until you cancel them in Settings. Lifetime is a single payment.</p>
           </div>
         </div>
       </section>
 
       <section class="privacy-strip">
         <p class="eyebrow">Privacy</p>
-        <h2>Your steps never leave your phone.</h2>
+        <h2>There is no account, and no server of ours.</h2>
         <p class="section-lede">
-          No account. No login. Strola reads your step count on-device and
-          can't see which apps you block — Apple's Screen Time design keeps
-          that private even from us. The only thing that ever leaves the
-          phone is anonymous feature-usage counts, and you can turn those off.
+          Strola reads your step count on the device and it stays there. We also
+          can't see which apps you block, because Apple's Screen Time design
+          hands the app opaque tokens rather than names. The only thing that
+          ever leaves your phone is an anonymous count of which features get
+          used, and you can turn that off in Settings.
         </p>
         <p style="margin-top:22px"><a href="/privacy">Read the privacy policy</a></p>
       </section>
 
       <section id="faq">
         <p class="eyebrow">FAQ</p>
-        <h2>Fair questions.</h2>
+        <h2>Questions people ask first</h2>
         <div class="faq">
           <details>
             <summary>Can't I just delete the app to get around it?</summary>
-            <p>You could — Strola is a commitment device, not a jail. But the
-               shield, your streak on the line, and the walk being the fastest
-               way back in are usually enough friction to send you outside
-               instead. That's the point: make the good choice the easy one.</p>
+            <p>You could. Strola is a commitment device and it does not pretend
+               otherwise. What tends to happen is that deleting the app takes
+               more effort than the walk does, especially with a streak on the
+               line, so most of the time people just go outside.</p>
           </details>
           <details>
             <summary>Does it count steps from my Apple Watch?</summary>
-            <p>Yes. Strola reads steps from your iPhone's motion sensors and
-               from Apple Health, which includes your Watch — whichever source
-               is higher counts, so a phone-in-pocket walk and a watch-only
-               walk both work.</p>
+            <p>Yes. Strola reads steps from your iPhone's motion sensors and from
+               Apple Health, which includes your Watch. Whichever source reports
+               more is the one that counts, so a walk with the phone in your
+               pocket and a walk with only the Watch both work.</p>
           </details>
           <details>
             <summary>What happens if I miss a day?</summary>
-            <p>The day shows up honestly on your calendar, the streak resets,
-               and tomorrow is a comeback — there's a badge for that. Your
-               apps unlock when the window ends either way; Strola never
-               locks you out all day.</p>
+            <p>The day shows up on your calendar as a miss and the streak resets.
+               There is a badge for the comeback, which helps more than you would
+               expect. Either way your apps unlock when the window ends. Strola
+               will not lock you out all day.</p>
           </details>
           <details>
             <summary>Which apps can it block?</summary>
-            <p>Any apps, categories, or websites you choose using Apple's
-               Screen Time picker — social media, video, games, all of it.
-               Strola never sees the list; Apple keeps it private by design.</p>
+            <p>Any app, category, or website you pick in Apple's Screen Time
+               picker. Strola never sees the list itself, because Apple keeps
+               that private by design.</p>
           </details>
           <details>
             <summary>Is my health data safe?</summary>
-            <p>Your step counts are read on-device and never transmitted
-               anywhere. There's no server and no account. See the
-               <a href="/privacy">privacy policy</a> for the full picture.</p>
+            <p>Your step counts are read on the device and are never transmitted
+               anywhere. There is no server and no account. The
+               <a href="/privacy">privacy policy</a> has the full detail.</p>
           </details>
         </div>
       </section>
 
       <section class="closing">
-        <h2>Tomorrow morning, your apps can wait for you outside.</h2>
+        <h2>Start tomorrow morning.</h2>
         <a class="btn btn-primary" href="#" data-appstore>Download on the App&nbsp;Store</a>
       </section>
     </main>
 
     <footer>
-      <span class="wordmark" style="width:92px;height:24px" aria-label="Strola"></span>
+      <span class="brand" role="img" aria-label="Strola"></span>
       <nav aria-label="Legal">
         <a href="/privacy">Privacy</a>
         <a href="mailto:support@strola.app">Support</a>
@@ -219,69 +294,126 @@
   </div>
 
   <script>
-    // The shield demo: the block screen earning its unlock, on a loop.
-    // Copy states mirror the app's ShieldContentBuilder exactly.
     (function () {
       var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      var goal = 1000;
-      var title = document.getElementById("shield-title");
-      var steps = document.getElementById("steps");
-      var countLabel = document.getElementById("count-label");
-      var streakLine = document.getElementById("streak-line");
-      var segs = document.querySelectorAll("#segbar i");
-      var segbar = document.getElementById("segbar");
-      var shield = document.getElementById("shield");
-      var goOutside = document.getElementById("go-outside");
 
-      function render(n) {
-        var p = Math.min(n / goal, 1);
-        steps.textContent = n.toLocaleString();
-        var filled = Math.floor(p * segs.length);
-        if (n > 0 && filled === 0) filled = 1;
-        segs.forEach(function (s, i) { s.classList.toggle("fill", i < filled); });
-        if (p >= 1) {
-          title.textContent = "You did it";
-          title.classList.add("done");
-          segbar.classList.add("done");
-          shield.classList.add("unlocked");
-          countLabel.textContent = "of " + goal.toLocaleString() + " steps";
-          streakLine.textContent = "Streak protected — day 13 🔥";
-          goOutside.textContent = "Apps unlocked";
+      /* ── Splash ──────────────────────────────────────────────────────
+         Once per session, so clicking through to /privacy and back does
+         not replay it. The overlay ships hidden; revealing it here means
+         a visitor with JS off never sees it and can never be trapped. */
+      var splash = document.getElementById("splash");
+      if (splash) {
+        var seen = false;
+        try { seen = sessionStorage.getItem("strola.splash") === "1"; } catch (e) {}
+
+        if (seen || reduced) {
+          splash.remove();
         } else {
-          title.classList.remove("done");
-          segbar.classList.remove("done");
-          shield.classList.remove("unlocked");
-          goOutside.textContent = "Go Outside";
-          streakLine.textContent = "🔥 12-day streak on the line";
-          countLabel.textContent = "of " + goal.toLocaleString() + " steps";
-          if (p >= 0.9) title.textContent = "So close!";
-          else if (p >= 0.5) title.textContent = "Over halfway there";
-          else title.textContent = "Take a walk first?";
+          splash.hidden = false;
+          try { sessionStorage.setItem("strola.splash", "1"); } catch (e) {}
+
+          var dismissed = false;
+          var dismiss = function () {
+            if (dismissed) return;
+            dismissed = true;
+            splash.classList.add("done");
+            setTimeout(function () { splash.remove(); }, 400);
+          };
+          // The animation runs 1.84s. Wait for load as well, but never past
+          // the cap: a stalled font or image must not hold the page hostage.
+          var elapsed = function () { dismiss(); };
+          setTimeout(elapsed, 2000);
+          window.addEventListener("load", function () {
+            setTimeout(elapsed, 1840);
+          });
         }
       }
 
-      if (reduced) { render(740); return; }
+      /* ── Hero dial ───────────────────────────────────────────────────
+         Counts to the goal, holds, then resets. The old hero looped
+         before it ever reached the goal, which showed the product
+         failing to do the one thing it does. */
+      var arc = document.getElementById("dial-arc");
+      var count = document.getElementById("dial-count");
 
-      var start = null, climb = 7000, hold = 2600;
-      function tick(t) {
-        if (start === null) start = t;
-        var elapsed = (t - start) % (climb + hold);
-        if (elapsed < climb) {
-          var eased = 0.5 - 0.5 * Math.cos((elapsed / climb) * Math.PI);
-          render(Math.round(goal * eased));
+      var dial = document.querySelector('.dial');
+      var goal = document.getElementById('dial-goal');
+
+      if (arc && count && dial) {
+        var GOAL = 2000;
+        var SWEEP = 533.82;    // 0.72 of the 741.42 circumference
+        var GOAL_LABEL = goal.textContent;
+
+        var CLIMB = 3400;      // fill
+        var CELEBRATE = 700;   // arc turns green, check draws in
+        var HOLD = 3200;       // parked on the completed state
+        var FADE = 1500;       // whole dial fades out
+        var RESTORE = 1100;    // back at zero, fades in
+        var CYCLE = CLIMB + CELEBRATE + HOLD + FADE + RESTORE;
+
+        var paint = function (p) {
+          arc.style.strokeDashoffset = (SWEEP * (1 - p)).toFixed(2);
+          count.textContent = Math.round(GOAL * p).toLocaleString();
+        };
+
+        var wasDone = null;
+        var setDone = function (on) {
+          if (on === wasDone) return;   // only touch the DOM on the transition
+          wasDone = on;
+          dial.classList.toggle('done', on);
+          goal.textContent = on ? 'Apps unlocked' : GOAL_LABEL;
+        };
+
+        if (reduced) {
+          paint(1);
+          setDone(true);       // rest on the payoff, no motion
         } else {
-          render(goal);
-        }
-        requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
+          var start = null;
+          var easeOut = function (x) { return 1 - Math.pow(1 - x, 3); };
 
-      // Scroll reveals.
+          var tick = function (now) {
+            if (start === null) start = now;
+            var t = (now - start) % CYCLE;
+
+            if (t < CLIMB) {
+              paint(easeOut(t / CLIMB));
+              setDone(false);
+              dial.style.opacity = 1;
+            } else if (t < CLIMB + CELEBRATE + HOLD) {
+              paint(1);
+              setDone(true);
+              dial.style.opacity = 1;
+            } else if (t < CLIMB + CELEBRATE + HOLD + FADE) {
+              // Fade the completed state out rather than running the fill
+              // backwards. Un-counting reads as un-walking, which is the
+              // opposite of the thing being demonstrated.
+              paint(1);
+              dial.style.opacity = 1 - (t - CLIMB - CELEBRATE - HOLD) / FADE;
+            } else {
+              paint(0);
+              setDone(false);
+              dial.style.opacity = (t - CLIMB - CELEBRATE - HOLD - FADE) / RESTORE;
+            }
+            requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      }
+
+      /* ── Scroll reveals ──────────────────────────────────────────────
+         Must stay outside any reduced-motion early return. .reveal starts
+         at opacity 0 and only the prefers-reduced-motion block in
+         style.css makes it visible without this observer. */
+      // Index each calendar cell so CSS can stagger it off --i.
+      document.querySelectorAll(".month i").forEach(function (cell, i) {
+        cell.style.setProperty("--i", i);
+      });
+
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
         });
-      }, { threshold: 0.2 });
+      }, { threshold: 0.2, rootMargin: "0px 0px -12% 0px" });
       document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
     })();
   </script>
