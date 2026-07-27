@@ -191,36 +191,146 @@
       </section>
 
       <section id="plus">
-        <p class="eyebrow">Pricing</p>
-        <h2>The walk is free, and it stays free.</h2>
+        <!-- One gradient, six icons. Declared once so the set can't drift.
+             userSpaceOnUse is load-bearing: the default objectBoundingBox makes
+             a flat horizontal or vertical stroke a zero-area box, and those
+             paths then don't paint at all. The deepened -ink variants are used
+             here for the same contrast reason the tick marks use them. -->
+        <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+          <defs>
+            <linearGradient id="plusgrad" gradientUnits="userSpaceOnUse"
+                            x1="0" y1="0" x2="24" y2="24">
+              <stop offset="0%" stop-color="#1f6ca6"/>
+              <stop offset="100%" stop-color="#5a61c9"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <p class="eyebrow">Strola+</p>
+        <h2>One walk a day is the start. Strola+ is your whole week.</h2>
         <p class="section-lede">
-          Blocking, streaks, and your full history are not behind a paywall and
-          will not be. Strola+ adds the extras that put the walk on your home
-          screen and lock screen.
+          Free Strola gives you one walk window a day, your step goal, app
+          blocking, the Live Activity and the widget. Strola+ is the scheduling
+          power on top of that.
         </p>
-        <div class="plans">
-          <div class="plan reveal">
-            <p class="tier">Strola</p>
-            <p class="price">Free forever</p>
-            <ul>
-              <li>App blocking with a daily window</li>
-              <li>Step goal, streaks &amp; full history</li>
-              <li>Badges and celebrations</li>
-              <li>Home &amp; lock screen widget</li>
-              <li>Screen time insights</li>
-            </ul>
-          </div>
-          <div class="plan plus reveal">
-            <p class="tier">Strola+</p>
-            <p class="price">$4.99/month · $29.99/year with 7-day free trial · $49.99 once</p>
-            <ul>
-              <li>Everything in free</li>
-              <li>Live Activity &amp; Dynamic Island</li>
-              <li>The full-width home widget</li>
-              <li>New Strola+ features as they ship</li>
-            </ul>
-            <p class="fine">Subscriptions renew until you cancel them in Settings. Lifetime is a single payment.</p>
-          </div>
+
+        <p class="free-line">
+          <span class="free-tag">Always free</span>
+          A daily walk window, your step goal, app blocking, streaks, history,
+          badges, the Live Activity and the widget.
+        </p>
+
+        <div class="plus-grid">
+          <article class="plus-card reveal" style="--i:0">
+            <span class="icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                   stroke="url(#plusgrad)" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.5" y="4" width="6" height="6" rx="1.5"/>
+                <rect x="11" y="4" width="6" height="6" rx="1.5"/>
+                <rect x="19.5" y="4" width="2" height="6" rx="1"/>
+                <rect x="2.5" y="14" width="6" height="6" rx="1.5"/>
+                <rect x="11" y="14" width="6" height="6" rx="1.5"/>
+                <rect x="19.5" y="14" width="2" height="6" rx="1"/>
+              </svg>
+            </span>
+            <h3>A plan for every day</h3>
+            <p>Different days deserve different rules. Build a tight two-window
+               Workday, an easy Weekend, a quiet Sunday. Assign a plan to each
+               weekday and your week runs itself.</p>
+          </article>
+
+          <article class="plus-card reveal" style="--i:1">
+            <span class="icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                   stroke="url(#plusgrad)" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3.5 4.5h6"/>
+                <path d="M10.5 10h9"/>
+                <path d="M5.5 15.5h6"/>
+                <path d="M14 21h6"/>
+              </svg>
+            </span>
+            <h3>Block more than once a day</h3>
+            <p>Add up to four windows a day. A morning start, a lunch reset, an
+               evening wind-down. Each one opens only by walking.</p>
+          </article>
+
+          <article class="plus-card reveal" style="--i:2">
+            <span class="icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                   stroke="url(#plusgrad)" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8h18"/>
+                <circle cx="15" cy="8" r="2.75"/>
+                <path d="M3 16h18"/>
+                <circle cx="8.5" cy="16" r="2.75"/>
+              </svg>
+            </span>
+            <h3>Goals that bend to you</h3>
+            <p>Earn a goal in every window, or one daily total that adds up
+               across the day. Give each window its own target, or let them
+               share one.</p>
+          </article>
+
+          <article class="plus-card reveal" style="--i:3">
+            <span class="icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                   stroke="url(#plusgrad)" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.5 14.7A8.5 8.5 0 0 1 9.3 3.5a8.5 8.5 0 1 0 11.2 11.2Z"/>
+                <path d="M17.5 3v3.5M15.75 4.75h3.5"/>
+              </svg>
+            </span>
+            <h3>Streak-savers</h3>
+            <p>Miss a day and a streak-saver quietly keeps your run alive. You
+               get a few every month, so one off day cannot erase weeks of
+               momentum.</p>
+          </article>
+
+          <article class="plus-card reveal" style="--i:4">
+            <span class="soon">Coming soon</span>
+            <span class="icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                   stroke="url(#plusgrad)" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="10.5" width="16" height="11" rx="2.5"/>
+                <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/>
+                <path d="M12 15v2.5"/>
+              </svg>
+            </span>
+            <h3>Commitment Lock</h3>
+            <p>Mean it. Lock your plan for 7 or 30 days. No disarming, no
+               bargaining with yourself, for when you need Strola to hold the
+               line.</p>
+          </article>
+
+          <article class="plus-card reveal" style="--i:5">
+            <span class="soon">Coming soon</span>
+            <span class="icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+                   stroke="url(#plusgrad)" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20.5h18"/>
+                <path d="M6.5 16.5v-4M12 16.5V4.5M17.5 16.5v-7"/>
+              </svg>
+            </span>
+            <h3>Window Insights</h3>
+            <p>See your patterns. Private, on-device stats on when you actually
+               walk, your strongest days, and how your streak is really
+               trending.</p>
+          </article>
+        </div>
+
+        <div class="pricing reveal">
+          <p class="price-lead">
+            <strong>$29.99</strong> a year <span class="save">Save 50%</span>
+          </p>
+          <p class="price-sub">
+            That works out to $2.50 a month. Seven days free to start.
+          </p>
+          <p class="price-alt">Month to month is $4.99.</p>
+          <p class="fine">Renews until you cancel in Settings.</p>
         </div>
       </section>
 
