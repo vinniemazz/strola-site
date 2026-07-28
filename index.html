@@ -21,7 +21,7 @@
        is why a second grotesque would have added nothing. -->
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&f[]=khand@500,600&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#F5F6F8">
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="stylesheet" href="style.css?v=30">
   <script>
     document.documentElement.classList.add("js");
     /* 50vw counts the scrollbar, so a calc(50% - 50vw) full-bleed overshoots
@@ -93,7 +93,9 @@
              ProgressRingView .dial exactly: 0.72 of the circle, r=118,
              18pt stroke, round caps, rotated 140.4deg. -->
         <div class="dial-stage">
-          <div class="dial" role="img"
+          <!-- data-dial-* rather than ids: the same component runs twice on
+               this page, here on a timer and in the scene on scroll. -->
+          <div class="dial" id="hero-dial" role="img"
                aria-label="A step dial filling from zero to a 2,000 step goal.">
             <svg viewBox="0 0 254 254" aria-hidden="true">
               <defs>
@@ -106,7 +108,7 @@
                  stroke-width="18" stroke-linecap="round">
                 <circle class="track" cx="127" cy="127" r="118"
                         stroke-dasharray="533.82 741.42"/>
-                <circle class="progress" id="dial-arc" cx="127" cy="127" r="118"
+                <circle class="progress" data-dial-arc cx="127" cy="127" r="118"
                         stroke="url(#ramp)"/>
               </g>
             </svg>
@@ -114,76 +116,113 @@
               <!-- Count and check share one grid cell so swapping them causes
                    no layout shift. -->
               <span class="dial-figure">
-                <span class="dial-count" id="dial-count">0</span>
+                <span class="dial-count" data-dial-count>0</span>
                 <svg class="dial-check" viewBox="0 0 48 48" aria-hidden="true">
                   <circle class="dial-check-disc" cx="24" cy="24" r="22"/>
                   <path class="dial-check-tick" d="M14 24.5 L21 31.5 L34 16.5"
                         pathLength="1"/>
                 </svg>
               </span>
-              <span class="dial-goal" id="dial-goal">of 2,000 steps</span>
+              <span class="dial-goal" data-dial-goal>of 2,000 steps</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ── One morning, in order ────────────────────────────────────────
-           The page stops being a list of features here and becomes a single
-           day. Times are real clock times, not 01/02/03: the order is the
-           content. Setup is folded into the locked moment because deciding
-           your apps and hours is not a step you take at 6:40, it is the thing
-           you already decided. -->
+      <!-- ── The walk scrubber ────────────────────────────────────────────
+           The two sections this replaced could not stay separate: the stage is
+           position: sticky, and sticky cannot span siblings. One scene, three
+           moments scrolling past one stage.
 
-      <section class="band" id="how">
-        <div class="moment">
-          <p class="mark">06:40</p>
-          <div class="moment-body">
-            <p class="eyebrow">The window opens</p>
-            <h2>Your apps are shut.</h2>
-            <p class="section-lede">
-              Between the hours you picked, the apps you picked will not open.
-              Strola shields them with Apple's Screen Time technology, so the
-              block holds. Walking is the only way out.
-            </p>
-            <dl class="setup">
-              <div><dt>Apps</dt><dd>Social, video, games, or one specific offender.</dd></div>
-              <div><dt>Window</dt><dd>The hours it applies. Most people cover the morning.</dd></div>
-              <div><dt>Goal</dt><dd>500 to 10,000 steps. 2,000 is about 20 minutes of walking.</dd></div>
-            </dl>
-          </div>
-          <figure class="phone reveal">
-            <img src="assets/locked.webp" width="600" height="1304" loading="lazy" decoding="async"
-                 alt="Strola's locked screen: apps locked, 1,284 of 2,000 steps, two hours and nineteen minutes left in the morning window.">
-          </figure>
-        </div>
-      </section>
+           The lock screen is rebuilt in HTML rather than screenshotted because
+           the dial has to move. A screenshot's dial is baked into the raster,
+           and overlaying a live one would mean patching over the printed step
+           count on a gradient. It reuses the same .dial component as the hero,
+           whose geometry is copied from ProgressRingView. -->
 
-      <section class="day">
-        <div class="moment">
-          <p class="mark">07:15</p>
-          <div class="moment-body">
-            <h2>You walk.</h2>
-            <p class="section-lede">
-              Your iPhone and Apple Watch both count. Whichever reads higher is
-              the one that counts, so a phone in your pocket and a watch on your
-              wrist both work.
-            </p>
-          </div>
-        </div>
+      <section class="scene" id="how"
+               aria-label="One morning with Strola, from locked to unlocked.">
+        <div class="scene-grid">
+          <div class="scene-track">
 
-        <div class="moment">
-          <p class="mark">07:31</p>
-          <div class="moment-body">
-            <h2>They open.</h2>
-            <p class="section-lede">
-              The goal lands, the apps unlock early, and the day gets a green
-              square. That is the whole loop, and it is the same every morning.
-            </p>
+            <article class="moment" data-at="0">
+              <p class="mark">06:40</p>
+              <div class="moment-body">
+                <p class="eyebrow">The window opens</p>
+                <h2>Your apps are shut.</h2>
+                <p class="section-lede">
+                  Between the hours you picked, the apps you picked will not
+                  open. Strola shields them with Apple's Screen Time technology,
+                  so the block holds. Walking is the only way out.
+                </p>
+                <dl class="setup">
+                  <div><dt>Apps</dt><dd>Social, video, games, or one specific offender.</dd></div>
+                  <div><dt>Window</dt><dd>The hours it applies. Most people cover the morning.</dd></div>
+                  <div><dt>Goal</dt><dd>500 to 10,000 steps. 2,000 is about 20 minutes of walking.</dd></div>
+                </dl>
+              </div>
+            </article>
+
+            <article class="moment" data-at="0.42">
+              <p class="mark">07:15</p>
+              <div class="moment-body">
+                <h2>You walk.</h2>
+                <p class="section-lede">
+                  Your iPhone and Apple Watch both count. Whichever reads higher
+                  is the one that counts, so a phone in your pocket and a watch
+                  on your wrist both work.
+                </p>
+              </div>
+            </article>
+
+            <article class="moment" data-at="0.86">
+              <p class="mark">07:31</p>
+              <div class="moment-body">
+                <h2>They open.</h2>
+                <p class="section-lede">
+                  The goal lands, the apps unlock early, and the day gets a
+                  green square. That is the whole loop, and it is the same every
+                  morning.
+                </p>
+              </div>
+            </article>
+
           </div>
-          <figure class="phone reveal">
-            <img src="assets/celebration.webp" width="600" height="1304" loading="lazy" decoding="async"
-                 alt="Goal met: a thirty day streak and a newly earned badge, The Monthly.">
-          </figure>
+
+          <div class="scene-stage">
+            <!-- Decorative: every number in here is also stated in the copy
+                 beside it, so a screen reader loses nothing by skipping it. -->
+            <div class="lockscreen" id="lockscreen" aria-hidden="true">
+              <span class="ls-brand"></span>
+              <p class="ls-tag">Apps locked</p>
+
+              <div class="dial" id="scene-dial">
+                <svg viewBox="0 0 254 254" aria-hidden="true">
+                  <g transform="rotate(140.4 127 127)" fill="none"
+                     stroke-width="18" stroke-linecap="round">
+                    <circle class="track" cx="127" cy="127" r="118"
+                            stroke-dasharray="533.82 741.42"/>
+                    <circle class="progress" data-dial-arc cx="127" cy="127" r="118"
+                            stroke="url(#ramp)"/>
+                  </g>
+                </svg>
+                <div class="dial-readout">
+                  <span class="dial-figure">
+                    <span class="dial-count" data-dial-count>0</span>
+                    <svg class="dial-check" viewBox="0 0 48 48" aria-hidden="true">
+                      <circle class="dial-check-disc" cx="24" cy="24" r="22"/>
+                      <path class="dial-check-tick" d="M14 24.5 L21 31.5 L34 16.5"
+                            pathLength="1"/>
+                    </svg>
+                  </span>
+                  <span class="dial-goal" data-dial-goal>of 2,000 steps</span>
+                </div>
+              </div>
+
+              <p class="ls-countdown" id="ls-countdown">2:19:04</p>
+              <p class="ls-until">until 12:00 PM</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -459,20 +498,56 @@
         }
       }
 
+      /* ── The dial ────────────────────────────────────────────────────
+         One component, two instances: the hero runs it on a timer, the
+         scene runs it on scroll position. Geometry is copied from the
+         app's ProgressRingView. */
+      var GOAL = 2000;
+      var SWEEP = 533.82;      // 0.72 of the 741.42 circumference
+
+      function makeDial(root) {
+        if (!root) return null;
+        var arc = root.querySelector("[data-dial-arc]");
+        var count = root.querySelector("[data-dial-count]");
+        var goal = root.querySelector("[data-dial-goal]");
+        if (!arc || !count || !goal) return null;
+
+        var goalLabel = goal.textContent;
+        var lastStep = null;
+        var wasDone = null;
+
+        return {
+          el: root,
+          paint: function (p) {
+            arc.style.strokeDashoffset = (SWEEP * (1 - p)).toFixed(2);
+            // Formatting a number allocates a string; skip it when the
+            // rendered value has not actually changed. On a scroll-driven
+            // dial this fires on most frames.
+            var step = Math.round(GOAL * p);
+            if (step !== lastStep) {
+              lastStep = step;
+              count.textContent = step.toLocaleString();
+            }
+          },
+          setDone: function (on) {
+            if (on === wasDone) return;  // only touch the DOM on the transition
+            wasDone = on;
+            root.classList.toggle("done", on);
+            goal.textContent = on ? "Apps unlocked" : goalLabel;
+          }
+        };
+      }
+
       /* ── Hero dial ───────────────────────────────────────────────────
          Counts to the goal, holds, then resets. The old hero looped
          before it ever reached the goal, which showed the product
          failing to do the one thing it does. */
-      var arc = document.getElementById("dial-arc");
-      var count = document.getElementById("dial-count");
+      var hero = makeDial(document.getElementById("hero-dial"));
 
-      var dial = document.querySelector('.dial');
-      var goal = document.getElementById('dial-goal');
-
-      if (arc && count && dial) {
-        var GOAL = 2000;
-        var SWEEP = 533.82;    // 0.72 of the 741.42 circumference
-        var GOAL_LABEL = goal.textContent;
+      if (hero) {
+        var dial = hero.el;
+        var paint = hero.paint;
+        var setDone = hero.setDone;
 
         var CLIMB = 3400;      // fill
         var CELEBRATE = 700;   // arc turns green, check draws in
@@ -480,19 +555,6 @@
         var FADE = 1500;       // whole dial fades out
         var RESTORE = 1100;    // back at zero, fades in
         var CYCLE = CLIMB + CELEBRATE + HOLD + FADE + RESTORE;
-
-        var paint = function (p) {
-          arc.style.strokeDashoffset = (SWEEP * (1 - p)).toFixed(2);
-          count.textContent = Math.round(GOAL * p).toLocaleString();
-        };
-
-        var wasDone = null;
-        var setDone = function (on) {
-          if (on === wasDone) return;   // only touch the DOM on the transition
-          wasDone = on;
-          dial.classList.toggle('done', on);
-          goal.textContent = on ? 'Apps unlocked' : GOAL_LABEL;
-        };
 
         if (reduced) {
           paint(1);
@@ -530,15 +592,107 @@
         }
       }
 
+      /* ── The walk scrubber ───────────────────────────────────────────
+         Scroll position through the scene is the walk. Drag the page and
+         the steps climb, the dial fills, the rail follows, and at the
+         goal the room brightens around the still-dark phone.
+
+         Scroll-linked, not scroll-triggered: p is recomputed from the
+         scroll offset every frame, so it runs backwards when you scroll
+         up. The reveals below are the triggered kind and fire once. */
+      var scene = document.getElementById("how");
+      var sceneDial = makeDial(document.getElementById("scene-dial"));
+
+      if (scene && sceneDial && !reduced) {
+        var stage = scene.querySelector(".scene-stage");
+        var moments = [].slice.call(scene.querySelectorAll(".moment"));
+        var clock = document.getElementById("ls-countdown");
+        var START_SECONDS = 2 * 3600 + 19 * 60 + 4;   // the 2:19:04 on the card
+        /* The countdown is time left in the window, not a progress bar, so it
+           must not land on zero. Zero would say the window closed on you; the
+           story is that you finished with most of it still to spare. */
+        var END_SECONDS = 38 * 60 + 56;
+
+        var top = 0, span = 1;
+        // Layout is read here and only here. Reading it inside the frame
+        // callback would force a reflow on every scroll event.
+        var measure = function () {
+          var box = scene.getBoundingClientRect();
+          top = box.top + window.scrollY;
+          span = Math.max(scene.offsetHeight - window.innerHeight, 1);
+        };
+
+        var lastP = -1, lastClock = null, lastActive = -1;
+
+        var render = function () {
+          var p = (window.scrollY - top) / span;
+          p = p < 0 ? 0 : p > 1 ? 1 : p;
+          if (Math.abs(p - lastP) < 0.0005) return;
+          lastP = p;
+
+          sceneDial.paint(p);
+          sceneDial.setDone(p >= 0.92);
+
+          // The rail fills and the room lightens, both straight off p.
+          scene.style.setProperty("--p", p.toFixed(4));
+          // Text and hairlines cannot ride --p: they have to flip from light
+          // on navy to dark on paper, and a half-mixed grey is unreadable
+          // against both. A class with a transition crossfades them instead.
+          scene.classList.toggle("is-lit", p >= 0.9);
+
+          if (clock) {
+            var left = Math.round(START_SECONDS + (END_SECONDS - START_SECONDS) * p);
+            if (left !== lastClock) {
+              lastClock = left;
+              var h = Math.floor(left / 3600);
+              var m = Math.floor((left % 3600) / 60);
+              var s = left % 60;
+              clock.textContent =
+                h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+            }
+          }
+
+          // Whichever moment we have most recently passed is the live one.
+          var active = 0;
+          for (var i = 0; i < moments.length; i++) {
+            if (p >= parseFloat(moments[i].dataset.at)) active = i;
+          }
+          if (active !== lastActive) {
+            lastActive = active;
+            for (var j = 0; j < moments.length; j++) {
+              moments[j].classList.toggle("is-active", j === active);
+            }
+          }
+        };
+
+        var queued = false;
+        var onScroll = function () {
+          if (queued) return;          // coalesce bursts into one frame
+          queued = true;
+          requestAnimationFrame(function () { queued = false; render(); });
+        };
+
+        scene.classList.add("is-live");   // CSS only sticks once JS is driving
+        measure();
+        render();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", function () { measure(); lastP = -1; render(); });
+        // Late webfont and image loads change the scene's height.
+        window.addEventListener("load", function () { measure(); lastP = -1; render(); });
+      } else if (sceneDial) {
+        // Reduced motion, or no scene: rest on the payoff like the hero does.
+        // The clock has to come with it, or the card shows a finished dial
+        // beside a countdown that never started.
+        sceneDial.paint(1);
+        sceneDial.setDone(true);
+        var restClock = document.getElementById("ls-countdown");
+        if (restClock) restClock.textContent = "0:38:56";
+      }
+
       /* ── Scroll reveals ──────────────────────────────────────────────
          Must stay outside any reduced-motion early return. .reveal starts
          at opacity 0 and only the prefers-reduced-motion block in
          style.css makes it visible without this observer. */
-      // Index each calendar cell so CSS can stagger it off --i.
-      document.querySelectorAll(".month i").forEach(function (cell, i) {
-        cell.style.setProperty("--i", i);
-      });
-
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }

@@ -477,15 +477,10 @@ h1 .then { color: var(--faint); }
     0 22px 50px rgba(21, 24, 46, 0.15);
 }
 
-/* On the dark band the light shadow disappears, so the screen gets a rim to
-   separate it from the navy instead. */
-.band .phone img {
-  box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.4),
-    0 30px 70px rgba(0, 0, 0, 0.45);
-  outline: 1px solid rgba(255, 255, 255, 0.09);
-  outline-offset: -1px;
-}
+/* Only the streak section uses a screenshot now. The locked and celebration
+   screens became the live .lockscreen in the scene, because a scrubbed dial
+   cannot be a raster. Both files are still in assets/ for the App Store
+   listing and the ad pipeline; the page no longer references them. */
 
 /* ── Sections ────────────────────────────────────────── */
 
@@ -515,58 +510,97 @@ h2 {
 }
 
 /* How it works: a real sequence, so the numbers mean something. */
-/* ── The day ─────────────────────────────────────────────
-   The page's spine. A morning told in clock order, with an hour rail down the
-   left. The times are real information, which is the only reason they earn a
-   structural slot: 01/02/03 markers here would be decoration, because the
-   sequence would carry no meaning of its own. */
+/* ── The scene: the walk scrubber ────────────────────────
+   The page's spine, and the one scroll-linked thing on it. Scroll position
+   through this section is the walk: --p runs 0 to 1 and is set by the driver
+   in index.html, which everything below reads.
 
-/* align-items: start, not center. Centring a two-line heading against a 700px
-   phone pushed it halfway down the section and stranded its hour mark up at
-   the top, so the mark stopped reading as a label for the thing beside it. */
-.moment {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 56px;
-  align-items: start;
+   Times are real information, which is the only reason they earn a structural
+   slot. 01/02/03 markers here would be decoration, because the sequence would
+   carry no meaning of its own. */
+
+.scene {
   position: relative;
-  padding-left: 108px;
+  margin-left: calc(50% - 50vw + var(--sbw, 0px) / 2);
+  margin-right: calc(50% - 50vw + var(--sbw, 0px) / 2);
+  padding: 0 calc(50vw - 50% - var(--sbw, 0px) / 2);
+  --p: 0;
+  /* The room brightens over the last stretch, while the phone stays dark.
+     Dark means the app's own surface, so the card holding still while its
+     surroundings lift is the block coming off, not a theme change. */
+  background:
+    linear-gradient(168deg, #101c3d, var(--splash-ink) 62%);
 }
 
-.moment + .moment { margin-top: 92px; }
+/* Layered so the light ground can cross-fade in over the navy without
+   animating a gradient, which is not interpolable. */
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ground);
+  /* 0.90 to 0.975. Spread wider than this and the crossfade parks on a flat
+     mid-grey that belongs to neither state; an unlock should read as a switch
+     rather than a dimmer. */
+  opacity: clamp(0, (var(--p) - 0.9) * 13.3, 1);
+  pointer-events: none;
+}
 
-/* The rail: a hairline at x=8, with the hour marks sitting to its right. The
-   dot has to straddle the line, so the geometry is fixed rather than eyeballed
-   — rail centre 8.5, dot 7px wide, so the dot's left edge is 5. */
+.scene-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 72px;
+  align-items: start;
+  padding: 96px 0;
+}
+
+/* Sticky only once the driver is attached. Without JS the stage scrolls
+   normally and the moments read as a plain stacked list. */
+.scene-track > .moment { padding-block: 26vh 26vh; }
+.scene.is-live .scene-stage {
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ── The rail ── */
+
+.moment {
+  position: relative;
+  padding-left: 108px;
+  transition: opacity 0.45s ease;
+}
+.scene.is-live .moment { opacity: 0.32; }
+.scene.is-live .moment.is-active { opacity: 1; }
+
 .moment::before {
   content: "";
   position: absolute;
   left: 8px;
-  top: 10px;
+  top: 0;
   bottom: 0;
   width: 1px;
-  background: var(--hairline);
+  background: rgba(255, 255, 255, 0.16);
 }
-/* Reach up through the 92px gap so consecutive moments share one unbroken
-   rail instead of a dashed one. */
-.moment + .moment::before { top: -92px; }
-.band .moment::before { background: rgba(255, 255, 255, 0.16); }
 
 .mark {
   position: absolute;
   left: 26px;
-  top: 0;
+  top: 26vh;
   font-family: var(--time);
   font-weight: 600;
   font-size: 19px;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-  color: var(--accent-ink);
+  color: rgba(255, 255, 255, 0.78);
+  transition: color 0.45s ease;
 }
-.band .mark { color: rgba(255, 255, 255, 0.78); }
+.moment.is-active .mark { color: #fff; }
 
 /* Pins the mark to the rail. -21px from the mark's own left edge lands the
-   dot centred on the line. */
+   dot centred on the 1px line. */
 .mark::after {
   content: "";
   position: absolute;
@@ -575,30 +609,113 @@ h2 {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--ramp);
+  background: var(--surface-strong);
+  transition: background 0.45s ease;
+}
+.moment.is-active .mark::after { background: var(--ramp); }
+
+/* The filled length of the rail, drawn once over the whole track rather than
+   per moment so it reads as one continuous walk. */
+.scene-track { position: relative; }
+.scene-track::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  width: 1px;
+  height: calc(var(--p) * 100%);
+  background: linear-gradient(180deg, var(--accent), var(--violet));
+  pointer-events: none;
 }
 
 .moment-body h2 { margin-bottom: 0; }
 .moment-body .eyebrow { margin-bottom: 10px; }
 
-/* ── The locked band ─────────────────────────────────────
-   The one dark surface on the page, and the only full-bleed section. Dark
-   means the app's own surface here: the shield screen and the premium card
-   are the two places it appears. Breaking out of .wrap needs the negative
-   margin trick; body carries overflow-x: hidden, so the 50vw overshoot at the
-   scrollbar is clipped rather than opening a horizontal scroll. */
-.band {
-  position: relative;
-  margin-left: calc(50% - 50vw + var(--sbw, 0px) / 2);
-  margin-right: calc(50% - 50vw + var(--sbw, 0px) / 2);
-  padding: 96px calc(50vw - 50% - var(--sbw, 0px) / 2);
-  background: linear-gradient(168deg, #101c3d, var(--splash-ink) 62%);
-  color: #fff;
+.scene h2 { color: #fff; }
+.scene .section-lede { color: rgba(255, 255, 255, 0.72); }
+.scene .eyebrow { color: #8fb6dc; }
+
+/* ── Lights up ───────────────────────────────────────────
+   Set by the driver once the goal lands. Everything that was legible on navy
+   has to flip to being legible on paper; a value interpolated off --p would
+   spend the middle of its range as a grey that fails against both grounds,
+   so this is a class with a transition rather than a lerp. The card itself
+   does not change: dark means the app's own surface, and the surface is what
+   stays put while the room lifts around it. */
+.scene h2,
+.scene .section-lede,
+.scene .eyebrow,
+.scene .mark,
+.scene .setup dt,
+.scene .setup dd { transition: color 0.45s ease; }
+.scene .setup,
+.scene .setup > div,
+.moment::before { transition: border-color 0.45s ease, background 0.45s ease; }
+
+.scene.is-lit h2 { color: var(--ink); }
+.scene.is-lit .section-lede { color: var(--dim); }
+.scene.is-lit .eyebrow { color: var(--accent-ink); }
+.scene.is-lit .mark { color: var(--accent-ink); }
+.scene.is-lit .moment.is-active .mark { color: var(--ink); }
+.scene.is-lit .moment::before { background: var(--hairline); }
+.scene.is-lit .setup { border-top-color: var(--hairline); }
+.scene.is-lit .setup > div { border-bottom-color: var(--hairline); }
+.scene.is-lit .setup dt { color: var(--faint); }
+.scene.is-lit .setup dd { color: var(--dim); }
+
+/* ── The live lock screen ────────────────────────────────
+   Rebuilt rather than screenshotted because the dial has to move with the
+   scroll, and a screenshot's dial is baked into the raster. It mirrors the
+   app's ShieldContentBuilder and ProgressRingView: if either changes, this
+   has to change with it. */
+
+.lockscreen {
+  width: min(320px, 78vw);
+  padding: 34px 26px 30px;
+  border-radius: 34px;
+  text-align: center;
+  background: linear-gradient(168deg, #16224a, #0a1024);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4), 0 34px 80px rgba(0, 0, 0, 0.5);
 }
 
-.band h2 { color: #fff; }
-.band .section-lede { color: rgba(255, 255, 255, 0.72); }
-.band .eyebrow { color: #8fb6dc; }
+.ls-brand {
+  display: block;
+  width: 78px;
+  height: 20px;
+  margin: 0 auto;
+  background: #fff;
+  -webkit-mask: url("assets/wordmark.svg") no-repeat center / contain;
+  mask: url("assets/wordmark.svg") no-repeat center / contain;
+}
+
+.ls-tag {
+  margin-top: 14px;
+  font-family: var(--time);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.lockscreen .dial { width: 100%; margin: 6px auto 0; }
+.lockscreen .dial .track { stroke: rgba(255, 255, 255, 0.12); }
+.lockscreen .dial-count { color: #fff; }
+.lockscreen .dial-goal { color: rgba(255, 255, 255, 0.55); }
+
+.ls-countdown {
+  font-family: var(--time);
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: #7ea9dc;
+}
+.ls-until {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.42);
+}
 
 /* Setup, folded into the locked moment. Choosing your apps and hours is not
    something you do at 06:40; it is what you already decided, so it reads as a
@@ -1002,6 +1119,14 @@ footer nav { display: flex; gap: 22px; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   /* The day bar arrives already painted rather than wiping open. */
   .js .daybar-wrap .win { transform: none; opacity: 1; animation: none; }
+  /* The scrubber never attaches (the driver checks the same query), so the
+     scene has to read correctly as a plain stacked section: nothing sticky,
+     no dimming, and the rail drawn at full length rather than at --p. */
+  .scene-track > .moment { padding-block: 40px; }
+  .scene.is-live .moment,
+  .scene .moment { opacity: 1; }
+  .scene-track::after { height: 100%; }
+  .mark { top: 40px; }
 }
 
 /* ── Responsive ──────────────────────────────────────── */
@@ -1018,27 +1143,44 @@ footer nav { display: flex; gap: 22px; }
   .dial { width: min(210px, 58vw); }
   .split { grid-template-columns: 1fr; gap: 40px; }
 
-  /* The rail collapses: the hour mark sits above its heading rather than
-     beside it, and the phone drops below the text. */
-  .moment {
+  /* The scene stacks: the card sticks to the top at a size that leaves room
+     to read, and the moments scroll underneath it. This is an iOS app site,
+     so the phone is the primary audience and the wrong place to switch the
+     centrepiece off. */
+  .scene-grid {
     grid-template-columns: 1fr;
     gap: 0;
-    padding-left: 0;
+    padding: 0;
   }
-  .moment::before { display: none; }
-  .mark {
-    position: static;
-    margin-bottom: 10px;
+  .scene-stage { order: -1; }
+  .scene.is-live .scene-stage {
+    top: 0;
+    transform: none;
+    padding: 16px 0 18px;
+    /* Fully opaque and above the track. A gradient that faded to transparent
+       let the moment text show through the card, and without the stacking
+       order the text painted over it entirely. Both have to be right: the
+       text slides *under* the card, which is the whole point of pinning it. */
+    z-index: 2;
+    background: var(--splash-ink);
+    box-shadow: 0 14px 22px rgba(10, 16, 36, 0.55);
   }
-  /* With no rail to straddle, the dot is a stray bullet. */
-  .mark::after { display: none; }
-  .moment .phone { margin-top: 34px; }
+  .scene.is-lit .scene-stage {
+    background: var(--ground);
+    box-shadow: 0 14px 22px rgba(21, 24, 46, 0.10);
+  }
+  .scene-track { position: relative; z-index: 1; }
+  .lockscreen { width: min(230px, 62vw); padding: 20px 18px 18px; border-radius: 26px; }
+  .lockscreen .dial { width: 84%; }
+  .ls-countdown { font-size: 24px; }
+  .scene-track > .moment { padding-block: 8vh 14vh; }
+  .mark { top: 8vh; }
 
   section { padding: 60px 0; }
-  /* Vertical only. Zeroing the horizontal padding here would undo the
-     calc(50vw - 50%) inset that puts the band's text back on the page's
+  /* Vertical only. Zeroing the horizontal padding would undo the
+     calc(50vw - 50%) inset that puts the scene's text back on the page's
      gutter after its negative margin pulls it to the viewport edge. */
-  .band { padding-top: 60px; padding-bottom: 60px; }
+  .scene-grid { padding-top: 0; padding-bottom: 40px; }
   .nav-links a:not(.btn) { display: none; }
 }
 
