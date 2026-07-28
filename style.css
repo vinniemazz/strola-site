@@ -639,7 +639,12 @@ h2 {
 .moment.is-active .mark::after { background: var(--ramp); }
 
 /* The filled length of the rail, drawn once over the whole track rather than
-   per moment so it reads as one continuous walk. */
+   per moment so it reads as one continuous walk.
+
+   The settle tail is subtracted, because a percentage height on an absolutely
+   positioned child resolves against the padding box. Left as plain 100% the
+   fill kept growing through the settle and hung a lit 1px line in the empty
+   space under the last moment, past the end of the rail it is filling. */
 .scene-track { position: relative; }
 .scene-track::after {
   content: "";
@@ -647,7 +652,7 @@ h2 {
   left: 8px;
   top: 0;
   width: 1px;
-  height: calc(var(--p) * 100%);
+  height: calc(var(--p) * (100% - var(--settle, 65vh)));
   background: linear-gradient(180deg, var(--accent), var(--violet));
   pointer-events: none;
 }
@@ -727,6 +732,13 @@ h2 {
 .lockscreen .dial .track { stroke: rgba(255, 255, 255, 0.12); }
 .lockscreen .dial-count { color: #fff; }
 .lockscreen .dial-goal { color: rgba(255, 255, 255, 0.55); }
+
+/* The hero's dial sits on paper, so its completed label is --ink. This one sits
+   on navy, and `.dial.done .dial-goal` (0,3,0) out-specifies
+   `.lockscreen .dial-goal` (0,2,0), so "Apps unlocked" was rendering near-black
+   on a near-black card at about 1.2:1 — the payoff line went invisible at the
+   exact moment it pays off. This selector is (0,4,0) and wins. */
+.lockscreen .dial.done .dial-goal { color: #fff; }
 
 .ls-countdown {
   font-family: var(--time);
