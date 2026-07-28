@@ -542,7 +542,7 @@ h2 {
   /* 0.90 to 0.975. Spread wider than this and the crossfade parks on a flat
      mid-grey that belongs to neither state; an unlock should read as a switch
      rather than a dimmer. */
-  opacity: clamp(0, (var(--p) - 0.9) * 13.3, 1);
+  opacity: clamp(0, (var(--p) - 0.72) * 12.5, 1);
   pointer-events: none;
 }
 
@@ -553,23 +553,45 @@ h2 {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 72px;
   align-items: start;
-  padding: 96px 0;
+  padding: 0;
 }
 
-/* Sticky only once the driver is attached. Without JS the stage scrolls
-   normally and the moments read as a plain stacked list. */
-.scene-track > .moment { padding-block: 26vh 26vh; }
+/* Each moment is exactly one viewport tall. That is what makes the timing
+   honest: moment i sits dead centre when scroll has travelled i viewports, so
+   activation, the dial and the copy can be derived from the same number
+   instead of being guessed at. The old build packed three moments into 1.44
+   viewports of travel, which is why the third one never reached a readable
+   position and the second lit up while it was still below the fold. */
+.scene-track > .moment { min-height: 100vh; }
+
+/* The settle beat. Without it the unlock lands on the last pixel of the
+   section and the next one starts while the checkmark is still drawing. */
+.scene-track { padding-bottom: 55vh; }
+
+/* A full-viewport sticky box with the card flex-centred inside it, rather than
+   top: 50% plus translateY(-50%). A transform does not move a sticky element's
+   release point, only its painted position, so the old pairing kept the card
+   centred right up until it unstuck and then dropped it 18px. Sticking the
+   whole viewport means the pin and the paint agree. */
 .scene.is-live .scene-stage {
   position: sticky;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 /* ── The rail ── */
 
+/* align-content centres the single row inside the 100vh box; align-items
+   start keeps the hour mark on the heading's first line rather than floating
+   beside the middle of the paragraph. */
 .moment {
   position: relative;
-  padding-left: 108px;
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  align-content: center;
+  align-items: start;
   transition: opacity 0.45s ease;
 }
 .scene.is-live .moment { opacity: 0.32; }
@@ -585,10 +607,12 @@ h2 {
   background: rgba(255, 255, 255, 0.16);
 }
 
+/* In the grid's first column rather than absolutely positioned, so it tracks
+   the heading automatically instead of being pinned to a hand-tuned offset
+   that only held at one viewport height. */
 .mark {
-  position: absolute;
-  left: 26px;
-  top: 26vh;
+  position: relative;
+  padding-left: 26px;
   font-family: var(--time);
   font-weight: 600;
   font-size: 19px;
@@ -599,12 +623,11 @@ h2 {
 }
 .moment.is-active .mark { color: #fff; }
 
-/* Pins the mark to the rail. -21px from the mark's own left edge lands the
-   dot centred on the 1px line. */
+/* Pins the mark to the rail: the dot's 7px straddles the 1px line at x=8. */
 .mark::after {
   content: "";
   position: absolute;
-  left: -21px;
+  left: 5px;
   top: 0.52em;
   width: 7px;
   height: 7px;
@@ -1121,12 +1144,14 @@ footer nav { display: flex; gap: 22px; }
   .js .daybar-wrap .win { transform: none; opacity: 1; animation: none; }
   /* The scrubber never attaches (the driver checks the same query), so the
      scene has to read correctly as a plain stacked section: nothing sticky,
-     no dimming, and the rail drawn at full length rather than at --p. */
-  .scene-track > .moment { padding-block: 40px; }
+     no dimming, no viewport-tall spacers, and the rail drawn at full length
+     rather than at --p. */
+  .scene-track > .moment { min-height: 0; padding-block: 34px; }
+  .scene-track { padding-bottom: 0; }
+  .scene-grid { padding: 80px 0; }
   .scene.is-live .moment,
   .scene .moment { opacity: 1; }
   .scene-track::after { height: 100%; }
-  .mark { top: 40px; }
 }
 
 /* ── Responsive ──────────────────────────────────────── */
@@ -1155,7 +1180,11 @@ footer nav { display: flex; gap: 22px; }
   .scene-stage { order: -1; }
   .scene.is-live .scene-stage {
     top: 0;
-    transform: none;
+    /* Not the desktop full-viewport box: here the card pins to the top and the
+       text scrolls beneath it, so the sticky element is only as tall as the
+       card itself. */
+    height: auto;
+    display: block;
     padding: 16px 0 18px;
     /* Fully opaque and above the track. A gradient that faded to transparent
        let the moment text show through the card, and without the stacking
@@ -1173,8 +1202,11 @@ footer nav { display: flex; gap: 22px; }
   .lockscreen { width: min(230px, 62vw); padding: 20px 18px 18px; border-radius: 26px; }
   .lockscreen .dial { width: 84%; }
   .ls-countdown { font-size: 24px; }
-  .scene-track > .moment { padding-block: 8vh 14vh; }
-  .mark { top: 8vh; }
+  /* The card eats roughly 40vh at the top, so a full viewport per moment would
+     leave the text stranded below the fold. 62vh puts each heading into the
+     readable strip under the card as it arrives. */
+  .scene-track > .moment { min-height: 62vh; }
+  .scene-track { padding-bottom: 30vh; }
 
   section { padding: 60px 0; }
   /* Vertical only. Zeroing the horizontal padding would undo the

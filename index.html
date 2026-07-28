@@ -21,7 +21,7 @@
        is why a second grotesque would have added nothing. -->
   <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&f[]=khand@500,600&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#F5F6F8">
-  <link rel="stylesheet" href="style.css?v=30">
+  <link rel="stylesheet" href="style.css?v=31">
   <script>
     document.documentElement.classList.add("js");
     /* 50vw counts the scrollbar, so a calc(50% - 50vw) full-bleed overshoots
@@ -145,7 +145,7 @@
         <div class="scene-grid">
           <div class="scene-track">
 
-            <article class="moment" data-at="0">
+            <article class="moment">
               <p class="mark">06:40</p>
               <div class="moment-body">
                 <p class="eyebrow">The window opens</p>
@@ -163,7 +163,7 @@
               </div>
             </article>
 
-            <article class="moment" data-at="0.42">
+            <article class="moment">
               <p class="mark">07:15</p>
               <div class="moment-body">
                 <h2>You walk.</h2>
@@ -175,7 +175,7 @@
               </div>
             </article>
 
-            <article class="moment" data-at="0.86">
+            <article class="moment">
               <p class="mark">07:31</p>
               <div class="moment-body">
                 <h2>They open.</h2>
@@ -613,16 +613,35 @@
            story is that you finished with most of it still to spare. */
         var END_SECONDS = 38 * 60 + 56;
 
-        var top = 0, span = 1;
-        // Layout is read here and only here. Reading it inside the frame
-        // callback would force a reflow on every scroll event.
+        /* The walk does not start until the walking beat does. A single linear
+           ramp across the whole scene meant the dial read 600 steps while the
+           copy beside it still said "Your apps are shut", which is the flow
+           breaking in the most literal way available. The dial now holds at
+           zero through the locked beat, climbs only while "You walk" is the
+           live moment, and finishes before "They open" arrives. */
+        var WALK_FROM = 0.30;   // dial leaves zero
+        var WALK_TO   = 0.70;   // dial reaches the goal
+        var UNLOCK    = 0.72;   // arc turns green, room starts lifting
+
+        var top = 0, span = 1, centres = [];
+        // Layout is read here and only here. Reading it inside the scroll
+        // handler would force a reflow on every event.
         var measure = function () {
           var box = scene.getBoundingClientRect();
           top = box.top + window.scrollY;
           span = Math.max(scene.offsetHeight - window.innerHeight, 1);
+          // Each moment's centre in document space. Activation is derived from
+          // these rather than from hand-authored numbers, so it cannot drift
+          // out of step with the layout when copy, fonts or the viewport
+          // change. That drift was the other half of the flow problem.
+          centres = moments.map(function (m) {
+            var r = m.getBoundingClientRect();
+            return r.top + window.scrollY + r.height / 2;
+          });
         };
 
         var lastP = -1, lastClock = null, lastActive = -1;
+        var easeOutWalk = function (x) { return 1 - Math.pow(1 - x, 2); };
 
         var render = function () {
           var p = (window.scrollY - top) / span;
@@ -630,18 +649,24 @@
           if (Math.abs(p - lastP) < 0.0005) return;
           lastP = p;
 
-          sceneDial.paint(p);
-          sceneDial.setDone(p >= 0.92);
+          // Walk progress, not scroll progress.
+          var walk = (p - WALK_FROM) / (WALK_TO - WALK_FROM);
+          walk = walk < 0 ? 0 : walk > 1 ? 1 : walk;
+          sceneDial.paint(easeOutWalk(walk));
+          sceneDial.setDone(p >= UNLOCK);
 
-          // The rail fills and the room lightens, both straight off p.
+          // The rail still fills across the whole scene: it is the reader's
+          // progress through the story, not the walker's progress to the goal.
           scene.style.setProperty("--p", p.toFixed(4));
           // Text and hairlines cannot ride --p: they have to flip from light
           // on navy to dark on paper, and a half-mixed grey is unreadable
           // against both. A class with a transition crossfades them instead.
-          scene.classList.toggle("is-lit", p >= 0.9);
+          scene.classList.toggle("is-lit", p >= UNLOCK + 0.02);
 
+          // The countdown tracks the walk, so it holds while the locked copy
+          // is being read instead of draining behind it.
           if (clock) {
-            var left = Math.round(START_SECONDS + (END_SECONDS - START_SECONDS) * p);
+            var left = Math.round(START_SECONDS + (END_SECONDS - START_SECONDS) * easeOutWalk(walk));
             if (left !== lastClock) {
               lastClock = left;
               var h = Math.floor(left / 3600);
@@ -652,10 +677,13 @@
             }
           }
 
-          // Whichever moment we have most recently passed is the live one.
-          var active = 0;
-          for (var i = 0; i < moments.length; i++) {
-            if (p >= parseFloat(moments[i].dataset.at)) active = i;
+          // Whichever moment is nearest the middle of the viewport is the one
+          // being read, so that is the one that lights.
+          var eye = window.scrollY + window.innerHeight / 2;
+          var active = 0, best = Infinity;
+          for (var i = 0; i < centres.length; i++) {
+            var dist = Math.abs(centres[i] - eye);
+            if (dist < best) { best = dist; active = i; }
           }
           if (active !== lastActive) {
             lastActive = active;
@@ -665,12 +693,16 @@
           }
         };
 
-        var queued = false;
-        var onScroll = function () {
-          if (queued) return;          // coalesce bursts into one frame
-          queued = true;
-          requestAnimationFrame(function () { queued = false; render(); });
-        };
+        /* Rendered straight off the scroll event rather than deferred into
+           requestAnimationFrame. The rAF version had a latch bug: it set a
+           "queued" flag before asking for a frame, so in any context where no
+           frame ever arrives the flag stays true and the scrubber dies
+           silently and permanently. Rendering here is safe because render()
+           reads no layout at all, only window.scrollY, and writes a handful of
+           styles; the browser already throttles scroll events to about frame
+           rate. It is also the only version that can be tested, since neither
+           a hidden tab nor a headless iframe reliably runs rAF. */
+        var onScroll = function () { render(); };
 
         scene.classList.add("is-live");   // CSS only sticks once JS is driving
         measure();
