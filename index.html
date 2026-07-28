@@ -16,10 +16,37 @@
        gets rounded twice and shows corner artifacts. -->
   <link rel="apple-touch-icon" href="assets/icon-180.png">
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-  <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&display=swap" rel="stylesheet">
+  <!-- Chillax carries the voice; Khand carries every clock time and step
+       figure. The pairing is a width contrast, condensed against wide, which
+       is why a second grotesque would have added nothing. -->
+  <link href="https://api.fontshare.com/v2/css?f[]=chillax@400,500,600&f[]=khand@500,600&display=swap" rel="stylesheet">
   <meta name="theme-color" content="#F5F6F8">
-  <link rel="stylesheet" href="style.css?v=28">
-  <script>document.documentElement.classList.add("js");</script>
+  <link rel="stylesheet" href="style.css?v=29">
+  <script>
+    document.documentElement.classList.add("js");
+    /* 50vw counts the scrollbar, so a calc(50% - 50vw) full-bleed overshoots
+       the viewport by exactly one scrollbar width. body's overflow-x: hidden
+       clips it, but iOS still rubber-bands sideways on a document that is
+       wider than its viewport. Measuring the gutter and handing it to CSS
+       cancels the overshoot instead of hiding it.
+
+       Measured after layout, not here: in the head the document has not been
+       laid out, so clientWidth still equals innerWidth and the gutter reads 0.
+       Re-measured on resize because the scrollbar appears and disappears. */
+    (function () {
+      var root = document.documentElement;
+      function gutter() {
+        var w = window.innerWidth - root.clientWidth;
+        root.style.setProperty("--sbw", (w > 0 ? w : 0) + "px");
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", gutter);
+      } else {
+        gutter();
+      }
+      window.addEventListener("resize", gutter);
+    })();
+  </script>
 </head>
 <body>
   <!-- Ships hidden and is revealed by the inline script at the foot of the
@@ -100,78 +127,76 @@
         </div>
       </section>
 
-      <section id="how">
-        <p class="eyebrow">How it works</p>
-        <h2>You set the terms, then Strola holds you to them.</h2>
-        <p class="section-lede">
-          Three things to decide, and you only decide them once. After that the
-          app is the same every morning until the walk is done.
-        </p>
-        <div class="steps">
-          <div class="step reveal">
-            <span class="n">Step 1</span>
-            <h3>Pick your apps</h3>
-            <p>Whatever it is that gets you. Social apps, video, games, or one
-               specific offender. Strola shields them with Apple's Screen Time
-               technology, which means the block holds.</p>
+      <!-- ── One morning, in order ────────────────────────────────────────
+           The page stops being a list of features here and becomes a single
+           day. Times are real clock times, not 01/02/03: the order is the
+           content. Setup is folded into the locked moment because deciding
+           your apps and hours is not a step you take at 6:40, it is the thing
+           you already decided. -->
+
+      <section class="band" id="how">
+        <div class="moment">
+          <p class="mark">06:40</p>
+          <div class="moment-body">
+            <p class="eyebrow">The window opens</p>
+            <h2>Your apps are shut.</h2>
+            <p class="section-lede">
+              Between the hours you picked, the apps you picked will not open.
+              Strola shields them with Apple's Screen Time technology, so the
+              block holds. Walking is the only way out.
+            </p>
+            <dl class="setup">
+              <div><dt>Apps</dt><dd>Social, video, games, or one specific offender.</dd></div>
+              <div><dt>Window</dt><dd>The hours it applies. Most people cover the morning.</dd></div>
+              <div><dt>Goal</dt><dd>500 to 10,000 steps. 2,000 is about 20 minutes of walking.</dd></div>
+            </dl>
           </div>
-          <div class="step reveal">
-            <span class="n">Step 2</span>
-            <h3>Set your steps and window</h3>
-            <p>Anywhere from 500 to 10,000 steps, and the hours it applies.
-               Most people put the window over the morning, because that is
-               when the scrolling tends to happen.</p>
-          </div>
-          <div class="step reveal">
-            <span class="n">Step 3</span>
-            <h3>Walk to unlock</h3>
-            <p>Your iPhone and Apple Watch count the steps. Hit the goal and the
-               apps open early, with a small celebration when they do.</p>
-          </div>
+          <figure class="phone reveal">
+            <img src="assets/locked.webp" width="600" height="1304" loading="lazy" decoding="async"
+                 alt="Strola's locked screen: apps locked, 1,284 of 2,000 steps, two hours and nineteen minutes left in the morning window.">
+          </figure>
         </div>
       </section>
 
+      <section class="day">
+        <div class="moment">
+          <p class="mark">07:15</p>
+          <div class="moment-body">
+            <h2>You walk.</h2>
+            <p class="section-lede">
+              Your iPhone and Apple Watch both count. Whichever reads higher is
+              the one that counts, so a phone in your pocket and a watch on your
+              wrist both work.
+            </p>
+          </div>
+        </div>
 
-      <section id="screens">
-        <p class="eyebrow">The app</p>
-        <h2>What a morning looks like.</h2>
-        <p class="section-lede">
-          Your apps stay shut while the dial fills. When it fills, they open and
-          the day gets a green square. That is the whole loop, and it is the same
-          every morning.
-        </p>
-
-        <div class="screens reveal">
-          <figure class="screen" style="--rot:-4.5deg; --i:0">
-            <img src="assets/locked.webp" width="600" height="1304" loading="lazy" decoding="async"
-                 alt="Strola's locked screen: apps locked, 1,284 of 2,000 steps, two hours nineteen minutes left in the morning window.">
-            <figcaption>Locked, mid&nbsp;walk</figcaption>
-          </figure>
-
-          <figure class="screen lead" style="--rot:0deg; --i:1">
+        <div class="moment">
+          <p class="mark">07:31</p>
+          <div class="moment-body">
+            <h2>They open.</h2>
+            <p class="section-lede">
+              The goal lands, the apps unlock early, and the day gets a green
+              square. That is the whole loop, and it is the same every morning.
+            </p>
+          </div>
+          <figure class="phone reveal">
             <img src="assets/celebration.webp" width="600" height="1304" loading="lazy" decoding="async"
                  alt="Goal met: a thirty day streak and a newly earned badge, The Monthly.">
-            <figcaption>Goal met</figcaption>
-          </figure>
-
-          <figure class="screen" style="--rot:4.5deg; --i:2">
-            <img src="assets/history.webp" width="600" height="1304" loading="lazy" decoding="async"
-                 alt="History: a thirty day streak, 82 percent completion, 2,162 average steps, and a calendar of met and missed days.">
-            <figcaption>Your history</figcaption>
           </figure>
         </div>
       </section>
 
-      <section>
+      <section id="streak">
         <div class="split">
           <div>
-            <p class="eyebrow">The streak</p>
+            <p class="eyebrow">Then tomorrow</p>
             <h2>The streak is the part that sticks.</h2>
             <p class="section-lede">
-              Every completed walk fills in a day on your calendar and adds one
-              to the number on the flame. Miss a day and the number goes back to
-              zero, which turns out to be a surprisingly effective reason to put
-              your shoes on.
+              Every completed walk fills in a day and adds one to the number on
+              the flame. Miss a day and the number goes back to zero, which
+              turns out to be a surprisingly effective reason to put your shoes
+              on.
             </p>
             <ul class="feature-list">
               <li><strong>Widgets</strong> put the streak on your home and lock screen.</li>
@@ -180,13 +205,13 @@
               <li><strong>Share cards</strong> turn a good week into something you can send.</li>
             </ul>
           </div>
-          <div class="month reveal" aria-hidden="true">
-            <i class="met"></i><i class="met"></i><i class="met"></i><i class="miss"></i><i class="met"></i><i class="met"></i><i class="met"></i>
-            <i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i>
-            <i class="met"></i><i class="met"></i><i class="miss"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i>
-            <i class="met"></i><i class="met"></i><i class="met"></i><i class="met"></i><i class="today"></i><i></i><i></i>
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
+          <!-- The real History screen, not a CSS diagram of one. A bare grid of
+               coloured squares sat 400px from a screenshot containing the same
+               calendar and lost badly. -->
+          <figure class="phone reveal">
+            <img src="assets/history.webp" width="600" height="1304" loading="lazy" decoding="async"
+                 alt="History: a thirty day streak, 82 percent completion, 2,162 average steps, and a calendar of met and missed days.">
+          </figure>
         </div>
       </section>
 
@@ -220,60 +245,46 @@
           badges, the Live Activity and the widget.
         </p>
 
+        <!-- ── The day bar ──────────────────────────────────────────────────
+             The signature. One day, midnight to midnight, with the blocked
+             windows painted on it. This is the product's own data model: a
+             StrolaWindow is a start, an end and a goal. It replaces the three
+             cards that used to describe multiple windows, per-weekday plans
+             and per-window goals, because showing one real Tuesday says all
+             three at once. -->
+        <figure class="daybar-wrap reveal">
+          <div class="daybar" aria-hidden="true">
+            <div class="daybar-track">
+              <span class="win" style="--from:27.08%; --span:10.42%">
+                <span class="win-goal">2,000</span>
+              </span>
+              <span class="win" style="--from:52.08%; --span:6.25%">
+                <span class="win-goal">1,000</span>
+              </span>
+              <span class="win" style="--from:87.5%; --span:8.33%">
+                <span class="win-goal">1,500</span>
+              </span>
+            </div>
+            <div class="daybar-hours">
+              <span style="--at:0%">00</span>
+              <span style="--at:25%">06</span>
+              <span style="--at:50%">12</span>
+              <span style="--at:75%">18</span>
+              <span style="--at:100%">24</span>
+            </div>
+          </div>
+          <figcaption>
+            A Tuesday on Strola+: a <strong>6:30 start</strong> at 2,000 steps,
+            a <strong>12:30 reset</strong> at 1,000, and a
+            <strong>21:00 wind-down</strong> at 1,500. Up to four windows a day,
+            each opened only by walking, each with its own goal or all sharing
+            one. Build a different day for every weekday and the week runs
+            itself.
+          </figcaption>
+        </figure>
+
         <div class="plus-grid">
           <article class="plus-card reveal" style="--i:0">
-            <span class="icon-tile" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
-                   stroke="url(#plusgrad)" stroke-width="1.5"
-                   stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2.5" y="4" width="6" height="6" rx="1.5"/>
-                <rect x="11" y="4" width="6" height="6" rx="1.5"/>
-                <rect x="19.5" y="4" width="2" height="6" rx="1"/>
-                <rect x="2.5" y="14" width="6" height="6" rx="1.5"/>
-                <rect x="11" y="14" width="6" height="6" rx="1.5"/>
-                <rect x="19.5" y="14" width="2" height="6" rx="1"/>
-              </svg>
-            </span>
-            <h3>A plan for every day</h3>
-            <p>Different days deserve different rules. Build a tight two-window
-               Workday, an easy Weekend, a quiet Sunday. Assign a plan to each
-               weekday and your week runs itself.</p>
-          </article>
-
-          <article class="plus-card reveal" style="--i:1">
-            <span class="icon-tile" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
-                   stroke="url(#plusgrad)" stroke-width="1.5"
-                   stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3.5 4.5h6"/>
-                <path d="M10.5 10h9"/>
-                <path d="M5.5 15.5h6"/>
-                <path d="M14 21h6"/>
-              </svg>
-            </span>
-            <h3>Block more than once a day</h3>
-            <p>Add up to four windows a day. A morning start, a lunch reset, an
-               evening wind-down. Each one opens only by walking.</p>
-          </article>
-
-          <article class="plus-card reveal" style="--i:2">
-            <span class="icon-tile" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
-                   stroke="url(#plusgrad)" stroke-width="1.5"
-                   stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 8h18"/>
-                <circle cx="15" cy="8" r="2.75"/>
-                <path d="M3 16h18"/>
-                <circle cx="8.5" cy="16" r="2.75"/>
-              </svg>
-            </span>
-            <h3>Goals that bend to you</h3>
-            <p>Earn a goal in every window, or one daily total that adds up
-               across the day. Give each window its own target, or let them
-               share one.</p>
-          </article>
-
-          <article class="plus-card reveal" style="--i:3">
             <span class="icon-tile" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
                    stroke="url(#plusgrad)" stroke-width="1.5"
@@ -288,7 +299,7 @@
                momentum.</p>
           </article>
 
-          <article class="plus-card reveal" style="--i:4">
+          <article class="plus-card reveal" style="--i:1">
             <span class="soon">Coming soon</span>
             <span class="icon-tile" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
@@ -305,7 +316,7 @@
                line.</p>
           </article>
 
-          <article class="plus-card reveal" style="--i:5">
+          <article class="plus-card reveal" style="--i:2">
             <span class="soon">Coming soon</span>
             <span class="icon-tile" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
