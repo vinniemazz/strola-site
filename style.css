@@ -556,17 +556,18 @@ h2 {
   padding: 0;
 }
 
-/* Each moment is exactly one viewport tall. That is what makes the timing
-   honest: moment i sits dead centre when scroll has travelled i viewports, so
-   activation, the dial and the copy can be derived from the same number
-   instead of being guessed at. The old build packed three moments into 1.44
-   viewports of travel, which is why the third one never reached a readable
-   position and the second lit up while it was still below the fold. */
-.scene-track > .moment { min-height: 100vh; }
+/* Equal beats, which is what makes the timing honest: every moment gets the
+   same travel, so activation, the dial and the copy all derive from one
+   number. The old build packed three moments into 1.44 viewports, which is why
+   the third never reached a readable position.
 
-/* The settle beat. Without it the unlock lands on the last pixel of the
-   section and the next one starts while the checkmark is still drawing. */
-.scene-track { padding-bottom: 55vh; }
+   --beat and --settle move together on purpose. Where each moment lands in p
+   is beat / (3*beat + settle - 100vh), so holding their ratio keeps the beat
+   positions fixed and leaves WALK_FROM / WALK_TO / UNLOCK in index.html valid.
+   Change one without the other and the unlock drifts off its own line. At
+   65/65 the three beats sit at p = 0, 0.41 and 0.81 with 19% left to settle. */
+.scene-track > .moment { min-height: var(--beat, 65vh); }
+.scene-track { padding-bottom: var(--settle, 65vh); }
 
 /* A full-viewport sticky box with the card flex-centred inside it, rather than
    top: 50% plus translateY(-50%). A transform does not move a sticky element's
@@ -1203,10 +1204,9 @@ footer nav { display: flex; gap: 22px; }
   .lockscreen .dial { width: 84%; }
   .ls-countdown { font-size: 24px; }
   /* The card eats roughly 40vh at the top, so a full viewport per moment would
-     leave the text stranded below the fold. 62vh puts each heading into the
-     readable strip under the card as it arrives. */
-  .scene-track > .moment { min-height: 62vh; }
-  .scene-track { padding-bottom: 30vh; }
+     leave the text stranded below the fold. These are shorter than desktop's
+     for the same reason, and again move together to preserve the ratio. */
+  .scene-track { --beat: 52vh; --settle: 34vh; }
 
   section { padding: 60px 0; }
   /* Vertical only. Zeroing the horizontal padding would undo the
